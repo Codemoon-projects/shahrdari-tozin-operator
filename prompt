@@ -1,0 +1,13 @@
+
+you are a senior Nextjs frontend developer.
+generate each below sections in below addresses in modern UI template.
+insurance use custom hooks in `hook` folder for connect data to server and slices.
+insurance 2 sections edited completly.
+NOT change hooks code
+
+sections dir
+```
+- app/Dashboard/(sections)/operation.tsx
+- app/Dashboard/(sections)/activity.tsx
+
+```

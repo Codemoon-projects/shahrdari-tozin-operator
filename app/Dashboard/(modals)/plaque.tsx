@@ -1,0 +1,283 @@
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useState, useRef, useEffect } from "react";
+import { Camera, Search } from "lucide-react";
+import usePlaque from "@/hooks/usePlaque";
+import { CarType } from "@/store/slices/Car";
+import Image from "next/image";
+
+const PlaqueOTPInput = ({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) => {
+  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+  const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
+
+  useEffect(() => {
+    const newOtp = value.split("");
+    setOtp(
+      Array(6)
+        .fill("")
+        .map((_, index) => {
+          if (newOtp.length > index) {
+            return newOtp[index];
+          }
+          return "";
+        })
+    );
+  }, [value]);
+
+  useEffect(() => {
+    // Initialize input refs
+    inputRefs.current = inputRefs.current.slice(0, 8);
+  }, []);
+
+  const handleInputChange = (index: number, value: string) => {
+    const newOtp = [...otp];
+    newOtp[index] = value;
+    setOtp(newOtp);
+
+    // Combine the OTP values and update parent
+    const combinedValue = newOtp.join("");
+    onChange(combinedValue);
+
+    // Auto-focus next input
+    if (value && index < 7) {
+      inputRefs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (
+    index: number,
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0) {
+      inputRefs.current[index - 1]?.focus();
+    }
+  };
+
+  return (
+    <div
+      className="flex gap-2 justify-center z-50 pr-20 pl-10 h-full"
+      dir="ltr"
+    >
+      {otp.map((digit, index) => (
+        <input
+          key={index}
+          ref={(el) => {
+            inputRefs.current[index] = el;
+          }}
+          type="text"
+          maxLength={1}
+          value={digit}
+          onChange={(e) => handleInputChange(index, e.target.value)}
+          onKeyDown={(e) => handleKeyDown(index, e)}
+          className="text-center text-3xl font-bold w-5 outline-none bg-white/10"
+        />
+      ))}
+    </div>
+  );
+};
+
+interface ModalProps {
+  goNext: (car: CarType) => void;
+}
+
+export default function Plaque({ goNext }: ModalProps) {
+  const { filterPlaques, selectCar, cars, selectedCar, clearSelectedCar } =
+    usePlaque();
+
+  useEffect(() => {
+    clearSelectedCar();
+  }, []);
+
+  const [selectedPlaque, setSelectedPlaque] = useState("");
+  const [filteredData, setFilteredData] = useState<CarType[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const handlePlaqueChange = (value: string) => {
+    setSelectedPlaque(value);
+    if (value.length > 0) {
+      const filtered = filterPlaques(value);
+      setFilteredData(filtered);
+      setShowDropdown(true);
+    } else {
+      setFilteredData([]);
+      setShowDropdown(false);
+    }
+  };
+
+  const handlePlaqueSelect = (plaque: string) => {
+    setSelectedPlaque(plaque);
+    setShowDropdown(false);
+  };
+
+  const handleSubmit = () => {
+    const car = cars.find((c) => c.Plaque === selectedPlaque);
+
+    if (car) {
+      selectCar(car);
+    }
+  };
+
+  return (
+    <div className="p-6">
+      <div className="flex flex-row gap-5">
+        {/* Right Column - Results */}
+        <div className="w-full">
+          {selectedCar ? (
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+              <div className="px-4 py-3 bg-gray-50 border-b">
+                <h2 className="text-sm font-semibold text-gray-900">
+                  نتایج جستجو
+                </h2>
+              </div>
+              <div className="p-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between pb-4 border-b border-gray-200">
+                    <div>
+                      <p className="text-lg font-bold text-gray-900">
+                        {selectedCar.Plaque}
+                      </p>
+                      {selectedCar.driver && selectedCar.driver.name && (
+                        <p className="text-sm text-gray-600">
+                          مالک: {selectedCar.driver.name}
+                        </p>
+                      )}
+                    </div>
+                    <div className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      ثبت شده
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div>
+                      <span className="text-gray-500">تاریخ بررسی:</span>
+                      <p className="font-medium">
+                        {new Date().toLocaleDateString("fa-IR")}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-gray-500">نوع خودرو:</span>
+                      <p className="font-medium">
+                        {selectedCar.type__name || "نامشخص"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t border-gray-200">
+                    <div className="flex gap-3">
+                      <Button
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+                        onClick={() => goNext(selectedCar)}
+                      >
+                        مرحله بعدی
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+              <div className="p-8 text-center">
+                <Search className="w-14 h-14 mx-auto mb-4 text-gray-400" />
+                <p className="text-gray-500 text-sm">
+                  جهت مشاهده اطلاعات، شماره پلاک را وارد کنید
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+        {/* Left Column - Camera and Search */}
+        <div className="space-y-6 w-96">
+          {/* Camera Section */}
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm">
+            <div className="px-4 py-3 bg-gray-50 border-b">
+              <h2 className="text-sm font-semibold text-gray-900">
+                دوربین نظارت
+              </h2>
+            </div>
+            <div className="p-4">
+              <div className="bg-gray-100 rounded-lg aspect-video flex items-center justify-center">
+                <div className="text-center">
+                  <div className="w-14 h-14 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Camera className="w-7 h-7 text-gray-600" />
+                  </div>
+                  <p className="text-sm text-gray-500">در انتظار اتصال</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Search Section */}
+          <div className="bg-white rounded-xl border border-gray-200 shadow-sm">
+            <div className="px-4 py-3 bg-gray-50 border-b">
+              <h2 className="text-sm font-semibold text-gray-900">فرم جستجو</h2>
+            </div>
+            <div className="p-6">
+              <div className="space-y-4">
+                <div className="w-80">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    شماره پلاک
+                  </label>
+                  <div className="relative">
+                    <div className="flex flex-col gap-2 relative mb-10 h-20">
+                      <Image
+                        src="/plaque.png"
+                        width={0}
+                        height={0}
+                        sizes="100vw"
+                        className="w-full h-auto absolute"
+                        alt="plaque"
+                      />
+                      <PlaqueOTPInput
+                        value={selectedPlaque}
+                        onChange={handlePlaqueChange}
+                      />
+                    </div>
+
+                    {/* Dropdown */}
+                    {showDropdown && cars.length > 0 && (
+                      <div className="absolute top-full right-0 left-0 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto mt-1">
+                        {cars.map((item) => (
+                          <button
+                            key={item.id}
+                            onClick={() => handlePlaqueSelect(item.Plaque)}
+                            className="w-full px-4 py-3 text-right hover:bg-gray-50 border-b border-gray-100 last:border-b-0 text-sm"
+                          >
+                            <div className="flex justify-between items-center">
+                              <span className="font-medium text-gray-900">
+                                {item.Plaque}
+                              </span>
+                              <span className="text-xs text-gray-500">
+                                {item.driver && item.driver.name
+                                  ? item.driver.name
+                                  : "مالک نامشخص"}
+                              </span>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <Button
+                  onClick={handleSubmit}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
+                  disabled={!selectedPlaque.trim()}
+                >
+                  جستجو
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
