@@ -11,6 +11,7 @@ import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { CarType } from "@/store/slices/Car";
 import { ActionType } from "@/store/slices/Action";
+import { openModal } from "@/store/core/modals";
 
 export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
   const { openConfirmModal } = useConfirm();
@@ -56,15 +57,19 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
     baskol_number_empty?: number;
     baskol_number_full?: number;
   }) => {
+    const d = {
+      ...data,
+      id: Activity_data.length + 1,
+      Empty: null,
+      Full: null,
+      baskol_number_empty: data.baskol_number_empty,
+      baskol_number_full: data.baskol_number_full,
+    };
+
+    dispatch(Activity_add(d));
+
     dispatch(
-      Activity_add({
-        ...data,
-        id: Activity_data.length + 1,
-        Empty: null,
-        Full: null,
-        baskol_number_empty: data.baskol_number_empty,
-        baskol_number_full: data.baskol_number_full,
-      })
+      openModal({ name: "mainModal", actionType: data.Action, activity: d })
     );
   };
 

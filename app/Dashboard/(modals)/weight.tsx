@@ -36,10 +36,10 @@ export default function WeightSection({
     }
   }, [baskolData]);
 
-  console.log(calculatedWeight);
-
   const handleSubmit = () => {
     if (calculatedWeight) {
+      console.log(modal);
+
       if (!modal?.activity) {
         return;
       }

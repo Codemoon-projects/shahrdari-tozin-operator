@@ -26,8 +26,6 @@ export default function MainModal() {
   useEffect(() => {
     const fetchData = async () => {
       const response = await midFetcher.get("");
-      console.log(response.data);
-
       setBaskolData(response.data);
     };
 
@@ -67,7 +65,7 @@ export default function MainModal() {
     }
   }, [modal]);
 
-  // if (!modal || modal?.actionType) return null;
+  if (!modal?.isOpen || !modal?.actionType) return null;
 
   const steps = [
     {
@@ -76,6 +74,8 @@ export default function MainModal() {
         <PlaqueSection
           baskolData={baskolData}
           goNext={(car) => {
+            console.log("OKOKOKOOK");
+
             createWithPlaque({
               Car: car,
               Action: modal.actionType as any,
