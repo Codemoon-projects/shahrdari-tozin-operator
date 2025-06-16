@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Cookies from "js-cookie";
 import fetcher from "@/lib/axios";
 import { useAuth } from "@/hooks/common/useAuth";
+import Image from "next/image";
 
 export default function LoginPage() {
   const [username, setUsername] = useState("");
@@ -24,7 +25,13 @@ export default function LoginPage() {
       <div className="w-full max-w-md mx-4">
         {/* Government Header */}
         <div className="text-center mb-8 justify-cneter flex flex-col items-center space-y-2">
-          <img src="../../public/logo.png" alt="Logo" className="w-40 h-40" />
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            className="w-40 h-40"
+            width={160}
+            height={160}
+          />
           <h1 className="text-2xl font-bold text-slate-800 mb-2">
             سامانه توزین شهرداری اردبیل
           </h1>

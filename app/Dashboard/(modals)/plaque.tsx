@@ -84,6 +84,11 @@ const PlaqueOTPInput = ({
 
 interface ModalProps {
   goNext: (car: CarType) => void;
+  baskolData?: {
+    plaque_number: string;
+    baskol_number: 1 | 2 | 3;
+    baskol_value: number;
+  };
 }
 
 export default function Plaque({ goNext }: ModalProps) {
@@ -116,7 +121,7 @@ export default function Plaque({ goNext }: ModalProps) {
   };
 
   const handleSubmit = () => {
-    const car = cars.find((c) => c.Plaque === selectedPlaque);
+    const car = cars.find((c) => c.license_plate === selectedPlaque);
 
     if (car) {
       selectCar(car);
@@ -140,7 +145,7 @@ export default function Plaque({ goNext }: ModalProps) {
                   <div className="flex items-center justify-between pb-4 border-b border-gray-200">
                     <div>
                       <p className="text-lg font-bold text-gray-900">
-                        {selectedCar.Plaque}
+                        {selectedCar.license_plate}
                       </p>
                       {selectedCar.driver && selectedCar.driver.name && (
                         <p className="text-sm text-gray-600">
@@ -246,12 +251,14 @@ export default function Plaque({ goNext }: ModalProps) {
                         {cars.map((item) => (
                           <button
                             key={item.id}
-                            onClick={() => handlePlaqueSelect(item.Plaque)}
+                            onClick={() =>
+                              handlePlaqueSelect(item.license_plate)
+                            }
                             className="w-full px-4 py-3 text-right hover:bg-gray-50 border-b border-gray-100 last:border-b-0 text-sm"
                           >
                             <div className="flex justify-between items-center">
                               <span className="font-medium text-gray-900">
-                                {item.Plaque}
+                                {item.license_plate}
                               </span>
                               <span className="text-xs text-gray-500">
                                 {item.driver && item.driver.name

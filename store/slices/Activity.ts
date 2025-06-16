@@ -8,6 +8,8 @@ export interface ActivityType {
   Full: number | null;
   Car: CarType;
   Action: ActionType;
+  baskol_number_empty?: number;
+  baskol_number_full?: number;
 }
 
 interface SliceType {

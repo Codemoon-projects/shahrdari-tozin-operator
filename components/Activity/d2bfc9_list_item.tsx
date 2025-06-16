@@ -80,7 +80,7 @@ export default function Activity_d2bfc9_list_item({ data }: ActivityProps) {
 
       {/* Vehicle Column */}
       <TableCell className="px-4 py-3 text-sm font-medium text-gray-900">
-        {Car ? Car.Plaque : "-"}
+        {Car ? Car.license_plate : "-"}
       </TableCell>
 
       {/* Action Type Column */}

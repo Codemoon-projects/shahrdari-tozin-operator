@@ -3,13 +3,13 @@ import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 export interface DriverType {
   id: number;
   name: string;
-  phone: string;
+  phone_number: string;
 }
 
 export interface CarType {
   id: number;
   driver: DriverType;
-  Plaque: string;
+  license_plate: string;
   type__name: string;
   last_empty_weight: number;
 }

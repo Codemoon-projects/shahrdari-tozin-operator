@@ -8,6 +8,12 @@ export const fetcher = axios.create({
     return status < 500;
   },
 });
+export const midFetcher = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_MID_URL,
+  validateStatus(status) {
+    return status < 500;
+  },
+});
 
 fetcher.interceptors.request.use(
   (config) => {

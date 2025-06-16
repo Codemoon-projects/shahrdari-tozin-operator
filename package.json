@@ -19,6 +19,7 @@
     "axios": "^1.8.3",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "cors": "^2.8.5",
     "date-fns": "^4.1.0",
     "framer-motion": "^12.7.5",
     "glob": "^11.0.1",

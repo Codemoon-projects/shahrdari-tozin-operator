@@ -1,19 +1,38 @@
 import { Modal } from "@/components/ui/modal";
-import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
-import { FileText, ChevronLeft } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { FileText } from "lucide-react";
 import { Stepper } from "@/components/ui/stepper";
 import PlaqueSection from "./plaque";
 import WeightSection from "./weight";
 import Confirm from "./confirm";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { Activity_add } from "@/store/slices/Activity";
+import { useAppSelector } from "@/store/hooks";
 import { useActivity } from "@/hooks/useActivity";
+import { midFetcher } from "@/lib/axios";
 
 export default function MainModal() {
   const [currentStep, setCurrentStep] = useState(0);
+  const [baskolData, setBaskolData] = useState<
+    | {
+        plaque_number: string;
+        baskol_number: 1 | 2 | 3;
+        baskol_value: number;
+      }
+    | undefined
+  >();
+
   const modal = useAppSelector((state) => state.modals.modals.mainModal);
   const { createWithPlaque } = useActivity("silent");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const response = await midFetcher.get("");
+      console.log(response.data);
+
+      setBaskolData(response.data);
+    };
+
+    fetchData();
+  }, [modal, currentStep]);
 
   useEffect(() => {
     if (!modal) {
@@ -48,17 +67,27 @@ export default function MainModal() {
     }
   }, [modal]);
 
-  if (!modal || modal?.actionType) return null;
+  // if (!modal || modal?.actionType) return null;
 
   const steps = [
     {
       title: "جستجوی پلاک",
       section: (
         <PlaqueSection
+          baskolData={baskolData}
           goNext={(car) => {
             createWithPlaque({
               Car: car,
               Action: modal.actionType as any,
+
+              ...(baskolData &&
+                (modal?.actionType?.type === "empty"
+                  ? {
+                      baskol_number_empty: baskolData?.baskol_number,
+                    }
+                  : {
+                      baskol_number_empty: baskolData?.baskol_number,
+                    })),
             });
             setCurrentStep(currentStep + 1);
           }}
@@ -71,6 +100,7 @@ export default function MainModal() {
             title: "وزن خالی",
             section: (
               <WeightSection
+                baskolData={baskolData}
                 goNext={() => setCurrentStep(currentStep + 1)}
                 goBack={() => setCurrentStep(currentStep - 1)}
                 isEmptyWeightCalc={true}
@@ -81,6 +111,7 @@ export default function MainModal() {
             title: "وزن پر",
             section: (
               <WeightSection
+                baskolData={baskolData}
                 goNext={() => setCurrentStep(currentStep + 1)}
                 goBack={() => setCurrentStep(currentStep - 1)}
                 isEmptyWeightCalc={false}
@@ -93,6 +124,7 @@ export default function MainModal() {
             title: "وزن پر",
             section: (
               <WeightSection
+                baskolData={baskolData}
                 goNext={() => setCurrentStep(currentStep + 1)}
                 goBack={() => setCurrentStep(currentStep - 1)}
                 isEmptyWeightCalc={false}
@@ -103,6 +135,7 @@ export default function MainModal() {
             title: "وزن خالی",
             section: (
               <WeightSection
+                baskolData={baskolData}
                 goNext={() => setCurrentStep(currentStep + 1)}
                 goBack={() => setCurrentStep(currentStep - 1)}
                 isEmptyWeightCalc={true}

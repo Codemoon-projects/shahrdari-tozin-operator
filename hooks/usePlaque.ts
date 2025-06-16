@@ -14,7 +14,7 @@ export default function usePlaque() {
   }, []);
 
   const fetchCarData = async () => {
-    const response = await fetcher.get("/api/cars/");
+    const response = await fetcher.get("cars/");
     dispatch(Car_set(response.data));
   };
 
@@ -29,7 +29,7 @@ export default function usePlaque() {
   const filterPlaques = (searchTerm: string): CarType[] => {
     if (!searchTerm) return cars;
     return cars.filter((car) =>
-      car.Plaque.toLowerCase().includes(searchTerm.toLowerCase())
+      car.license_plate.toLowerCase().includes(searchTerm.toLowerCase())
     );
   };
 

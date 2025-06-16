@@ -48,7 +48,9 @@ export default function Confirm({ goNext, goBack }: SectionProps) {
               <div className="space-y-3">
                 <div className="bg-white p-3 rounded-md">
                   <p className="text-sm text-gray-500">شماره پلاک</p>
-                  <p className="font-medium text-lg">{selectedCar.Plaque}</p>
+                  <p className="font-medium text-lg">
+                    {selectedCar.license_plate}
+                  </p>
                 </div>
                 <div className="bg-white p-3 rounded-md">
                   <p className="text-sm text-gray-500">نوع خودرو</p>
@@ -75,7 +77,7 @@ export default function Confirm({ goNext, goBack }: SectionProps) {
                 <div className="bg-white p-3 rounded-md">
                   <p className="text-sm text-gray-500">شماره تماس</p>
                   <p className="font-medium text-lg">
-                    {selectedCar.driver?.phone || "نامشخص"}
+                    {selectedCar.driver?.phone_number || "نامشخص"}
                   </p>
                 </div>
               </div>

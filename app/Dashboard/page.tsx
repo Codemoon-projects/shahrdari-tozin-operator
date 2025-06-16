@@ -10,7 +10,7 @@ import StatusToggle from "@/components/User/StatusToggle";
 import { useAction } from "@/hooks/useAction";
 import { useActivity } from "@/hooks/useActivity";
 import { useEffect, useState } from "react";
-import PlaqueModal from "./(modals)/main";
+import ActionModal from "./(modals)/main";
 import { Modal } from "@/components/ui/modal";
 
 export default function () {
@@ -247,7 +247,7 @@ export default function () {
           </div>
         </div>
       </main>
-      <PlaqueModal />
+      <ActionModal />
       {messageModalOpen && (
         <Modal __name__="customMessageModal">
           <div className="w-96">

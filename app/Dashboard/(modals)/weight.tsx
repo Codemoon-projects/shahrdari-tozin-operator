@@ -2,7 +2,6 @@ import usePlaque from "@/hooks/usePlaque";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { Scale, Loader2, User, Car, Truck, ChevronLeft } from "lucide-react";
-import { CarType } from "@/store/slices/Car";
 import { useActivity } from "@/hooks/useActivity";
 import { useAppSelector } from "@/store/hooks";
 import { cn } from "@/lib/utils";
@@ -11,33 +10,33 @@ interface SectionInterface {
   goNext: () => void;
   goBack: () => void;
   isEmptyWeightCalc: boolean;
+  baskolData?: {
+    plaque_number: string;
+    baskol_number: 1 | 2 | 3;
+    baskol_value: number;
+  };
 }
 
 export default function WeightSection({
   goNext,
   goBack,
   isEmptyWeightCalc,
+  baskolData,
 }: SectionInterface) {
   const { selectedCar } = usePlaque();
   const { updateWeight } = useActivity("silent");
   const modal = useAppSelector((state) => state.modals.modals.mainModal);
   const [isCalculating, setIsCalculating] = useState(true);
   const [calculatedWeight, setCalculatedWeight] = useState<number | null>(null);
-  useEffect(() => {
-    const fetchWeight = async () => {
-      try {
-        const response = await fetch("http://localhost:8000/status");
-        const data = await response.json();
-        setCalculatedWeight(data.last_weight);
-        setIsCalculating(false);
-      } catch (error) {
-        console.error("Error fetching weight data:", error);
-        setIsCalculating(false);
-      }
-    };
 
-    fetchWeight();
-  }, [isEmptyWeightCalc]);
+  useEffect(() => {
+    if (baskolData) {
+      setCalculatedWeight(baskolData?.baskol_value);
+      setIsCalculating(false);
+    }
+  }, [baskolData]);
+
+  console.log(calculatedWeight);
 
   const handleSubmit = () => {
     if (calculatedWeight) {
@@ -97,7 +96,7 @@ export default function WeightSection({
                       شماره پلاک
                     </p>
                     <p className="text-base text-gray-900 font-semibold">
-                      {selectedCar.Plaque}
+                      {selectedCar.license_plate}
                     </p>
                   </div>
 
@@ -131,7 +130,7 @@ export default function WeightSection({
               <h2 className="text-sm font-medium text-gray-600 mb-6">
                 {isEmptyWeightCalc ? "وزن خالی خودرو" : "وزن پر خودرو"}
               </h2>
-              {isCalculating ? (
+              {!!isCalculating ? (
                 <div className="flex items-center justify-center gap-3">
                   <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
                   <span className="text-base text-blue-600 font-medium">

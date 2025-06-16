@@ -30,7 +30,7 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
       const response = await fetcher.get("Activity/aba6a8/");
 
       if (response.status >= 200 && response.status < 300) {
-        const serverData = response.data.Activity;
+        const serverData = response.data.Weighing;
         // set response of server on state
         dispatch(Activity_set(serverData));
         return true;
@@ -53,6 +53,8 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
   const createWithPlaque = async (data: {
     Car: CarType;
     Action: ActionType;
+    baskol_number_empty?: number;
+    baskol_number_full?: number;
   }) => {
     dispatch(
       Activity_add({
@@ -60,6 +62,8 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
         id: Activity_data.length + 1,
         Empty: null,
         Full: null,
+        baskol_number_empty: data.baskol_number_empty,
+        baskol_number_full: data.baskol_number_full,
       })
     );
   };
