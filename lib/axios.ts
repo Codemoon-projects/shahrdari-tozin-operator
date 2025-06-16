@@ -18,6 +18,8 @@ export const midFetcher = axios.create({
 fetcher.interceptors.request.use(
   (config) => {
     const token = Cookies.get("accessToken");
+    console.log(token);
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

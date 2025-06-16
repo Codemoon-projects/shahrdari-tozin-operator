@@ -1,9 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import Cookies from "js-cookie";
-import fetcher from "@/lib/axios";
 import { useAuth } from "@/hooks/common/useAuth";
 import Image from "next/image";
 

@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logoutUser, setUser } from "@/store/core/auth";
 import { useRouter } from "next/navigation";
 import fetcher from "@/lib/axios";
+import axios from "axios";
 
 export function useAuth() {
   const [loading, loadingHandler] = useState(false);
@@ -23,7 +24,10 @@ export function useAuth() {
     errorHandler("");
 
     try {
-      const response = await fetcher.post("login/", params);
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}login/`,
+        params
+      );
 
       if (response.status !== 200) {
         throw new Error(response.data.error || "Login failed");

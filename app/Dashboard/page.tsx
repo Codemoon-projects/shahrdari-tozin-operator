@@ -12,14 +12,21 @@ import { useActivity } from "@/hooks/useActivity";
 import { useEffect, useState } from "react";
 import ActionModal from "./(modals)/main";
 import { Modal } from "@/components/ui/modal";
+import { useCar } from "@/hooks/useCar";
 
 export default function () {
   const { Action_list, get_Action_list_list_712daa } = useAction();
-  const { Activity_data, get_Activity_list_list_d2bfc9 } = useActivity();
+  const {
+    Activity_data,
+    get_Activity_list_list_d2bfc9,
+    sendDataServer: sendActivityData,
+  } = useActivity();
+  const { sendReport } = useCar("silent");
   const dispatch = useAppDispatch();
   const [messageModalOpen, setMessageModalOpen] = useState<
-    null | "report" | "requestCar"
+    null | "violation" | "vehicle"
   >(null);
+
   const [reportType, setReportType] = useState("");
   const [driverName, setDriverName] = useState("");
   const [driverNumber, setDriverNumber] = useState("");
@@ -28,6 +35,7 @@ export default function () {
   const [companyName, setCompanyName] = useState("");
   const [desc, setDesc] = useState("");
   const [loading, setLoading] = useState(false);
+  const [online, setOnline] = useState(false);
   const [success, setSuccess] = useState(false);
 
   const onClickComponent = (d: ActionType) => {
@@ -36,12 +44,13 @@ export default function () {
 
   const handleStatusChange = (status: boolean) => {
     // Here you can add logic to update the user's status in your backend
-    console.log("User status changed to:", status ? "online" : "offline");
+    setOnline(status);
   };
 
-  const handleOpenModal = (type: "report" | "requestCar") => {
+  const handleOpenModal = (type: "violation" | "vehicle") => {
     setMessageModalOpen(type);
-    setReportType(type === "report" ? "violation" : "request_car");
+    setReportType(type === "violation" ? "violation" : "vehicle");
+    dispatch(openModal({ name: "customMessageModal" } as any));
     setDriverName("");
     setDriverNumber("");
     setCarPlaque("");
@@ -65,20 +74,15 @@ export default function () {
 
   const handleSendMessage = async () => {
     setLoading(true);
-    const endpoint = "/api/report/";
     try {
-      await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          report_type: reportType,
-          driver_name: driverName,
-          driver_number: driverNumber,
-          car_plaque: carPlaque,
-          car_type: carType,
-          company_name: companyName,
-          desc: desc,
-        }),
+      sendReport({
+        report_type: reportType,
+        driver_name: driverName,
+        driver_number: driverNumber,
+        car_plaque: carPlaque,
+        car_type: carType,
+        company_name: companyName,
+        desc: desc,
       });
       setSuccess(true);
       setDriverName("");
@@ -102,6 +106,14 @@ export default function () {
     get_Activity_list_list_d2bfc9();
   }, []);
 
+  useEffect(() => {
+    if (online) {
+      console.log("Activity_data", Activity_data);
+
+      sendActivityData();
+    }
+  }, [Activity_data, online]);
+
   const hasActions = Action_list.length > 0;
   const hasActivities = Activity_data.length > 0;
 
@@ -123,13 +135,13 @@ export default function () {
             <div className="flex items-center gap-4">
               <button
                 className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg border border-red-700 font-medium transition-colors"
-                onClick={() => handleOpenModal("report")}
+                onClick={() => handleOpenModal("violation")}
               >
                 گزارش تخلف
               </button>
               <button
                 className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg border border-blue-700 font-medium transition-colors"
-                onClick={() => handleOpenModal("requestCar")}
+                onClick={() => handleOpenModal("vehicle")}
               >
                 درخواست ماشین جدید
               </button>
@@ -252,7 +264,7 @@ export default function () {
         <Modal __name__="customMessageModal">
           <div className="w-96">
             <h2 className="text-lg font-bold mb-4 text-gray-800 text-center">
-              {messageModalOpen === "report"
+              {messageModalOpen === "violation"
                 ? "گزارش تخلف"
                 : "درخواست ماشین جدید"}
             </h2>

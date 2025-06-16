@@ -1,7 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
 export interface ActionType {
-  id: number;
+  pk: number;
   name: string;
   type: "empty" | "full";
 }
@@ -27,20 +27,20 @@ const Action = createSlice({
     }),
     Action_update: (
       state,
-      action: PayloadAction<{ data: ActionType; id: ActionType["id"] }>
+      action: PayloadAction<{ data: ActionType; id: ActionType["pk"] }>
     ) => ({
       ...state,
       data: [
         action.payload.data,
-        ...state.data.filter((d) => d.id !== action.payload.id),
+        ...state.data.filter((d) => d.pk !== action.payload.id),
       ],
     }),
     Action_remove: (
       state,
-      action: PayloadAction<{ id: ActionType["id"] }>
+      action: PayloadAction<{ id: ActionType["pk"] }>
     ) => ({
       ...state,
-      data: state.data.filter((d) => d.id !== action.payload.id),
+      data: state.data.filter((d) => d.pk !== action.payload.id),
     }),
   },
 });

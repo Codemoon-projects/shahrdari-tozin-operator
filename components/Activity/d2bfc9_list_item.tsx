@@ -9,7 +9,7 @@ interface ActivityProps {
 }
 
 export default function Activity_d2bfc9_list_item({ data }: ActivityProps) {
-  const { Car, Empty, Full, id, Action } = data;
+  const { Car, Empty, Full, pk: id, Action } = data;
 
   const dispatch = useAppDispatch();
 

@@ -250,7 +250,7 @@ export default function Plaque({ goNext }: ModalProps) {
                       <div className="absolute top-full right-0 left-0 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto mt-1">
                         {cars.map((item) => (
                           <button
-                            key={item.id}
+                            key={item.pk}
                             onClick={() =>
                               handlePlaqueSelect(item.license_plate)
                             }

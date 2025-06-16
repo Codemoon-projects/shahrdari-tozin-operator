@@ -7,7 +7,7 @@ export interface DriverType {
 }
 
 export interface CarType {
-  id: number;
+  pk: number;
   driver: DriverType;
   license_plate: string;
   type__name: string;
@@ -35,17 +35,17 @@ const Car = createSlice({
     }),
     Car_update: (
       state,
-      action: PayloadAction<{ data: CarType; id: CarType["id"] }>
+      action: PayloadAction<{ data: CarType; id: CarType["pk"] }>
     ) => ({
       ...state,
       data: [
         action.payload.data,
-        ...state.data.filter((d) => d.id !== action.payload.id),
+        ...state.data.filter((d) => d.pk !== action.payload.id),
       ],
     }),
-    Car_remove: (state, action: PayloadAction<{ id: CarType["id"] }>) => ({
+    Car_remove: (state, action: PayloadAction<{ id: CarType["pk"] }>) => ({
       ...state,
-      data: state.data.filter((d) => d.id !== action.payload.id),
+      data: state.data.filter((d) => d.pk !== action.payload.id),
     }),
   },
 });

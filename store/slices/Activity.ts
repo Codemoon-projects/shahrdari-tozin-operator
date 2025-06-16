@@ -3,13 +3,14 @@ import { CarType } from "./Car";
 import { ActionType } from "./Action";
 
 export interface ActivityType {
-  id: number;
+  pk: number;
   Empty: number | null;
   Full: number | null;
   Car: CarType;
   Action: ActionType;
   baskol_number_empty?: number;
   baskol_number_full?: number;
+  server_accepted: boolean;
 }
 
 interface SliceType {
@@ -33,35 +34,35 @@ const Activity = createSlice({
     }),
     update: (
       state,
-      action: PayloadAction<{ data: ActivityType; id: ActivityType["id"] }>
+      action: PayloadAction<{ data: ActivityType; id: ActivityType["pk"] }>
     ) => ({
       ...state,
       data: [
         action.payload.data,
-        ...state.data.filter((d) => d.id !== action.payload.id),
+        ...state.data.filter((d) => d.pk !== action.payload.id),
       ],
     }),
-    remove: (state, action: PayloadAction<{ id: ActivityType["id"] }>) => ({
+    remove: (state, action: PayloadAction<{ id: ActivityType["pk"] }>) => ({
       ...state,
-      data: state.data.filter((d) => d.id !== action.payload.id),
+      data: state.data.filter((d) => d.pk !== action.payload.id),
     }),
 
     update_empty: (
       state,
-      action: PayloadAction<{ id: ActivityType["id"]; empty: number }>
+      action: PayloadAction<{ id: ActivityType["pk"]; empty: number }>
     ) => ({
       ...state,
       data: state.data.map((d) =>
-        d.id === action.payload.id ? { ...d, Empty: action.payload.empty } : d
+        d.pk === action.payload.id ? { ...d, Empty: action.payload.empty } : d
       ),
     }),
     update_full: (
       state,
-      action: PayloadAction<{ id: ActivityType["id"]; full: number }>
+      action: PayloadAction<{ id: ActivityType["pk"]; full: number }>
     ) => ({
       ...state,
       data: state.data.map((d) =>
-        d.id === action.payload.id ? { ...d, Full: action.payload.full } : d
+        d.pk === action.payload.id ? { ...d, Full: action.payload.full } : d
       ),
     }),
   },
