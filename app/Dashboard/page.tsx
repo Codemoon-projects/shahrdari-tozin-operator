@@ -106,10 +106,10 @@ export default function () {
     get_Activity_list_list_d2bfc9();
   }, []);
 
+  console.log(Activity_data);
+
   useEffect(() => {
     if (online) {
-      console.log("Activity_data", Activity_data);
-
       sendActivityData();
     }
   }, [Activity_data, online]);

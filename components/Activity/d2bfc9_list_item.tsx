@@ -1,8 +1,8 @@
 import { type ActivityType } from "@/store/slices/Activity";
 import { TableCell, TableRow } from "@/components/ui/table";
 import { openModal } from "@/store/core/modals";
-import { ActionType } from "@/store/slices/Action";
 import { useAppDispatch } from "@/store/hooks";
+import { temp_selectCar } from "@/store/slices/temp";
 
 interface ActivityProps {
   data: ActivityType;
@@ -10,10 +10,12 @@ interface ActivityProps {
 
 export default function Activity_d2bfc9_list_item({ data }: ActivityProps) {
   const { Car, Empty, Full, pk: id, Action } = data;
-
   const dispatch = useAppDispatch();
 
   const onClickComponent = (d: ActivityType) => {
+    console.log(d.Car);
+    dispatch(temp_selectCar({ car: d.Car }));
+
     dispatch(
       openModal({ name: "mainModal", actionType: d.Action, activity: d })
     );

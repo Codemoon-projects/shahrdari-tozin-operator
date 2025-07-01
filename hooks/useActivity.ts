@@ -33,7 +33,11 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
       if (response.status >= 200 && response.status < 300) {
         const serverData = response.data.Weighing;
         // set response of server on state
-        dispatch(Activity_set(serverData));
+        dispatch(
+          Activity_set(
+            serverData.map((a: any) => ({ ...a, server_accepted: true }))
+          )
+        );
         return true;
       }
 
@@ -75,17 +79,18 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
   };
 
   const updateWeight = async (data: ActivityType) => {
-    dispatch(Activity_update({ data, id: data.pk }));
+    dispatch(Activity_update({ data, pk: data.pk }));
   };
 
   const sendDataServer = async () => {
+    console.log("Activity_data", Activity_data);
+
     const data = Activity_data.filter((a) => !a.server_accepted).map((a) => ({
       vehicle_id: a.Car.pk,
       weighing_type_id: a.Action.pk,
       Full: a.Full,
       Empty: a.Empty,
     }));
-    console.log("data", data);
 
     const response = await fetcher.post("activity/", data);
   };

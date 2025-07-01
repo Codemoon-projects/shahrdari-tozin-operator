@@ -1,7 +1,7 @@
 import usePlaque from "@/hooks/usePlaque";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { Scale, Loader2, User, Car, Truck, ChevronLeft } from "lucide-react";
+import { Loader2, User, ChevronLeft } from "lucide-react";
 import { useActivity } from "@/hooks/useActivity";
 import { useAppSelector } from "@/store/hooks";
 import { cn } from "@/lib/utils";

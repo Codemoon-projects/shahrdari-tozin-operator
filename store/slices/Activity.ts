@@ -34,35 +34,35 @@ const Activity = createSlice({
     }),
     update: (
       state,
-      action: PayloadAction<{ data: ActivityType; id: ActivityType["pk"] }>
+      action: PayloadAction<{ data: ActivityType; pk: ActivityType["pk"] }>
     ) => ({
       ...state,
       data: [
         action.payload.data,
-        ...state.data.filter((d) => d.pk !== action.payload.id),
+        ...state.data.filter((d) => d.pk !== action.payload.pk),
       ],
     }),
-    remove: (state, action: PayloadAction<{ id: ActivityType["pk"] }>) => ({
+    remove: (state, action: PayloadAction<{ pk: ActivityType["pk"] }>) => ({
       ...state,
-      data: state.data.filter((d) => d.pk !== action.payload.id),
+      data: state.data.filter((d) => d.pk !== action.payload.pk),
     }),
 
     update_empty: (
       state,
-      action: PayloadAction<{ id: ActivityType["pk"]; empty: number }>
+      action: PayloadAction<{ pk: ActivityType["pk"]; empty: number }>
     ) => ({
       ...state,
       data: state.data.map((d) =>
-        d.pk === action.payload.id ? { ...d, Empty: action.payload.empty } : d
+        d.pk === action.payload.pk ? { ...d, Empty: action.payload.empty } : d
       ),
     }),
     update_full: (
       state,
-      action: PayloadAction<{ id: ActivityType["pk"]; full: number }>
+      action: PayloadAction<{ pk: ActivityType["pk"]; full: number }>
     ) => ({
       ...state,
       data: state.data.map((d) =>
-        d.pk === action.payload.id ? { ...d, Full: action.payload.full } : d
+        d.pk === action.payload.pk ? { ...d, Full: action.payload.full } : d
       ),
     }),
   },
