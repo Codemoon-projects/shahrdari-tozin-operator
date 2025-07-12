@@ -18,7 +18,7 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
   const Activity_data = useAppSelector((store) => store.Activity).data;
   const dispatch = useAppDispatch();
 
-  const get_Activity_data_aba6a8 = async (confirm: boolean = false) => {
+  const get_activity_list = async (confirm: boolean = false) => {
     // check for confirm when this function is opened
     if (confirm) {
       const isConfirmed = await openConfirmModal();
@@ -50,11 +50,6 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
     }
   };
 
-  const get_Activity_list_list_d2bfc9 = async (confirm: boolean = false) => {
-    // For this demo, just reuse the same function
-    return get_Activity_data_aba6a8(confirm);
-  };
-
   const createWithPlaque = async (data: {
     Car: CarType;
     Action: ActionType;
@@ -63,7 +58,7 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
   }) => {
     const d: ActivityType = {
       ...data,
-      pk: Activity_data.length + 1,
+      pk: (Activity_data.length + 1) * -1,
       Empty: null,
       Full: null,
       baskol_number_empty: data.baskol_number_empty,
@@ -83,9 +78,8 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
   };
 
   const sendDataServer = async () => {
-    console.log("Activity_data", Activity_data);
-
     const data = Activity_data.filter((a) => !a.server_accepted).map((a) => ({
+      id: a.pk,
       vehicle_id: a.Car.pk,
       weighing_type_id: a.Action.pk,
       Full: a.Full,
@@ -93,19 +87,26 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
     }));
 
     const response = await fetcher.post("activity/", data);
+
+    const serverData = response.data.Weighing;
+    dispatch(
+      Activity_set(
+        serverData.map((a: any) => ({ ...a, server_accepted: true }))
+      )
+    );
   };
 
   useEffect(() => {
     // Fetch data when hook is initialized
     if (mode !== "silent") {
-      get_Activity_data_aba6a8();
+      get_activity_list();
     }
   }, []);
 
   return {
     Activity_data,
-    get_Activity_data_aba6a8,
-    get_Activity_list_list_d2bfc9,
+    get_activity_list,
+    get_Activity_list_list_d2bfc9: get_activity_list,
     createWithPlaque,
     updateWeight,
     sendDataServer,

@@ -4,6 +4,7 @@ export interface ActionType {
   pk: number;
   name: string;
   type: "empty" | "full";
+  front_id:number
 }
 
 interface SliceType {

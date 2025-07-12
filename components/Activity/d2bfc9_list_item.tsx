@@ -13,7 +13,6 @@ export default function Activity_d2bfc9_list_item({ data }: ActivityProps) {
   const dispatch = useAppDispatch();
 
   const onClickComponent = (d: ActivityType) => {
-    console.log(d.Car);
     dispatch(temp_selectCar({ car: d.Car }));
 
     dispatch(

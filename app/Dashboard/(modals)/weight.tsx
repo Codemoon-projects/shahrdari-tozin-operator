@@ -38,8 +38,6 @@ export default function WeightSection({
 
   const handleSubmit = () => {
     if (calculatedWeight) {
-      console.log(modal);
-
       if (!modal?.activity) {
         return;
       }
@@ -48,6 +46,7 @@ export default function WeightSection({
         ...modal.activity,
         Empty: isEmptyWeightCalc ? calculatedWeight : modal.activity.Empty,
         Full: isEmptyWeightCalc ? modal.activity.Full : calculatedWeight,
+        server_accepted: false,
       });
       goNext();
     }

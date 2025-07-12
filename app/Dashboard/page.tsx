@@ -1,6 +1,6 @@
 "use client";
 
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { openModal } from "@/store/core/modals";
 import { type ActionType } from "@/store/slices/Action";
 import ActionItem from "@/components/Action/itemlist";
@@ -22,6 +22,7 @@ export default function () {
     sendDataServer: sendActivityData,
   } = useActivity();
   const { sendReport } = useCar("silent");
+  const modal = useAppSelector((state) => state.modals.modals.mainModal);
   const dispatch = useAppDispatch();
   const [messageModalOpen, setMessageModalOpen] = useState<
     null | "violation" | "vehicle"
@@ -35,7 +36,7 @@ export default function () {
   const [companyName, setCompanyName] = useState("");
   const [desc, setDesc] = useState("");
   const [loading, setLoading] = useState(false);
-  const [online, setOnline] = useState(false);
+  const [online, setOnline] = useState(true);
   const [success, setSuccess] = useState(false);
 
   const onClickComponent = (d: ActionType) => {
@@ -74,28 +75,23 @@ export default function () {
 
   const handleSendMessage = async () => {
     setLoading(true);
-    try {
-      sendReport({
-        report_type: reportType,
-        driver_name: driverName,
-        driver_number: driverNumber,
-        car_plaque: carPlaque,
-        car_type: carType,
-        company_name: companyName,
-        desc: desc,
-      });
-      setSuccess(true);
-      setDriverName("");
-      setDriverNumber("");
-      setCarPlaque("");
-      setCarType("");
-      setCompanyName("");
-      setDesc("");
-    } catch (e) {
-      // handle error
-    } finally {
-      setLoading(false);
-    }
+    sendReport({
+      report_type: reportType,
+      driver_name: driverName,
+      driver_number: driverNumber,
+      car_plaque: carPlaque,
+      car_type: carType,
+      company_name: companyName,
+      desc: desc,
+    });
+    setSuccess(true);
+    setDriverName("");
+    setDriverNumber("");
+    setCarPlaque("");
+    setCarType("");
+    setCompanyName("");
+    setDesc("");
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -106,13 +102,11 @@ export default function () {
     get_Activity_list_list_d2bfc9();
   }, []);
 
-  console.log(Activity_data);
-
   useEffect(() => {
-    if (online) {
+    if (online && !modal?.isOpen) {
       sendActivityData();
     }
-  }, [Activity_data, online]);
+  }, [Activity_data, online, modal]);
 
   const hasActions = Action_list.length > 0;
   const hasActivities = Activity_data.length > 0;
@@ -222,7 +216,11 @@ export default function () {
                       شما هیچ اقدام مجازی در این زمان ندارید. لطفا با مدیر سیستم
                       تماس بگیرید.
                     </p>
-                    <button className="bg-gray-700 hover:bg-gray-800 text-white py-2 px-4 rounded-lg border border-gray-800 font-medium transition-colors">
+                    <button
+                      disabled
+                      className="bg-gray-700 hover:bg-gray-800 text-white py-2 
+                      px-4 rounded-lg border border-gray-800 font-medium transition-colors"
+                    >
                       تماس با مدیر سیستم
                     </button>
                   </div>

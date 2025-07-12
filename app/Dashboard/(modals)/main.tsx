@@ -1,5 +1,5 @@
 import { Modal } from "@/components/ui/modal";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
 import { Stepper } from "@/components/ui/stepper";
 import PlaqueSection from "./plaque";
@@ -74,8 +74,6 @@ export default function MainModal() {
         <PlaqueSection
           baskolData={baskolData}
           goNext={(car) => {
-            console.log("OKOKOKOOK");
-
             createWithPlaque({
               Car: car,
               Action: modal.actionType as any,

@@ -1,6 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { ActionType } from "../slices/Action";
 import { ActivityType } from "../slices/Activity";
+import { CarType } from "../slices/Car";
 
 export type appMessageType = {
   type: "" | "success" | "error" | "warning" | "info";
@@ -16,6 +17,7 @@ export type coreType = {
       isOpen?: boolean;
       actionType?: ActionType;
       activity?: ActivityType;
+      car?: CarType;
     };
   };
   message: appMessageType;
@@ -50,6 +52,7 @@ const coreSlice = createSlice({
         name: modals;
         actionType: ActionType;
         activity?: ActivityType;
+        car?: CarType;
       }>
     ) => {
       state.modals[action.payload.name] = {
