@@ -1,5 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap');
 @import "tailwindcss";
+
 @plugin "daisyui" {
   themes: "light";
 }
@@ -7,6 +7,12 @@
 @plugin "tailwindcss-animate";
 @plugin "tailwind-scrollbar-hide";
 
+@font-face {
+  font-family: "Byekkan";
+  src: url("../public/fonts/Yekan.ttf");
+}
+
+
 * {
-  font-family: "Vazirmatn", sans-serif;
+  font-family: "Byekkan", sans-serif;
 }
