@@ -1,10 +1,22 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
+export interface ExprotTypes {
+  id: number;
+  name: string;
+  shema: string;
+}
+
+export interface UploadTypes {
+  id: number;
+  name: string;
+}
+
 export interface ActionType {
   pk: number;
   name: string;
   type: "empty" | "full";
-  front_id:number
+  exports: ExprotTypes[];
+  uploads: UploadTypes[];
 }
 
 interface SliceType {

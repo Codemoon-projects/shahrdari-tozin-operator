@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Printer, Car, User, Scale, ChevronLeft } from "lucide-react";
 import usePlaque from "@/hooks/usePlaque";
 import { closeModal as closeModalAction } from "@/store/core/modals";
-import { useAppDispatch } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 
 interface SectionProps {
   goNext: () => void;
@@ -11,6 +11,9 @@ interface SectionProps {
 
 export default function Confirm({ goNext, goBack }: SectionProps) {
   const { selectedCar } = usePlaque();
+  const modal = useAppSelector((state) => state.modals.modals.mainModal);
+  const exports = modal?.actionType?.exports || [];
+
   const dispatch = useAppDispatch();
 
   const closeModal = () => {
@@ -114,13 +117,15 @@ export default function Confirm({ goNext, goBack }: SectionProps) {
             >
               تایید و ادامه
             </Button>
-            <Button
-              onClick={handlePrint}
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
-            >
-              <Printer className="w-4 h-4" />
-              چاپ فاکتور
-            </Button>
+            {exports.map((a) => (
+              <Button
+                onClick={handlePrint}
+                className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+              >
+                <Printer className="w-4 h-4" />
+                {a.name}
+              </Button>
+            ))}
           </div>
 
           <Button

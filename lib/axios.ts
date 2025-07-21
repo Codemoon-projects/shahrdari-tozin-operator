@@ -8,6 +8,13 @@ export const fetcher = axios.create({
     return status < 500;
   },
 });
+
+export const axiosNoUser = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:8000/",
+  validateStatus(status) {
+    return status < 500;
+  },
+});
 export const midFetcher = axios.create({
   baseURL: process.env.NEXT_PUBLIC_MID_URL,
   validateStatus(status) {
@@ -43,19 +50,8 @@ fetcher.interceptors.response.use(
   async (error) => {
     if (error.response?.status === 401) {
       // Handle token expiration, e.g., refresh the token
-      const refreshToken = Cookies.get("refreshToken");
-      if (refreshToken) {
-        try {
-          const res = await axios.post("/user/refresh", { refreshToken });
-          Cookies.set("accessToken", res.data.access);
-          error.config.headers.Authorization = `Bearer ${res.data.access}`;
-          return await fetcher(error.config);
-        } catch (err) {
-          Cookies.remove("accessToken");
-          Cookies.remove("refreshToken");
-          return await Promise.reject(err);
-        }
-      }
+      Cookies.remove("accessToken");
+      Cookies.remove("refreshToken");
     }
 
     return Promise.reject(error);

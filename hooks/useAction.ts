@@ -24,17 +24,18 @@ export function useAction() {
 
       if (response.status >= 200 && response.status < 300) {
         const serverData = response.data.Action;
+        console.log(serverData);
         // set response of server on state
 
         dispatch(Action_set(serverData));
         return true;
       } else {
-        toast.error("Failed to fetch actions data");
+        toast.error("خطا در دریافت اطلاعات");
         return false;
       }
     } catch (error) {
       console.error("Error fetching action data:", error);
-      toast.error("Error connecting to server");
+      toast.error("خطا در دریافت اطلاعات");
       return false;
     }
   };

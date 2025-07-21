@@ -5,8 +5,7 @@ import Cookies from "js-cookie";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { logoutUser, setUser } from "@/store/core/auth";
 import { useRouter } from "next/navigation";
-import fetcher from "@/lib/axios";
-import axios from "axios";
+import fetcher, { axiosNoUser } from "@/lib/axios";
 
 export function useAuth() {
   const [loading, loadingHandler] = useState(false);
@@ -17,18 +16,19 @@ export function useAuth() {
 
   const loginUser = async (params: { username: string; password: string }) => {
     if (!params.username || !params.password) {
-      errorHandler("Please enter both username and password");
+      errorHandler("لطفا نام کاربری و رمز عبور را به طور صحیح وارد کنید");
       return;
     }
     loadingHandler(true);
     errorHandler("");
 
     try {
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}login/`,
-        params
-      );
+      const response = await axiosNoUser.post("login/", params);
 
+      console.log("status", response.status);
+      console.log("OKOKOOKOKOKOKO");
+
+      console.log("-->>", response.data);
       if (response.status !== 200) {
         throw new Error(response.data.error || "Login failed");
       }
@@ -46,7 +46,7 @@ export function useAuth() {
 
       console.log("Login successful, redirecting to Dashboard...");
 
-      // Force page reload to trigger middleware for redirection
+      // // Force page reload to trigger middleware for redirection
       window.location.href = "/Dashboard";
     } catch (err: any) {
       console.error("Login error:", err);
