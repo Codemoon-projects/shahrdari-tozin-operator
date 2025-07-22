@@ -10,7 +10,7 @@ import { fetcher } from "@/lib/axios";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
 import { CarType } from "@/store/slices/Car";
-import { ActionType } from "@/store/slices/Action";
+import { ActionType, ActionWorkType } from "@/store/slices/Action";
 import { openModal } from "@/store/core/modals";
 
 export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
@@ -53,6 +53,7 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
   const createWithPlaque = async (data: {
     Car: CarType;
     Action: ActionType;
+    work: ActionWorkType;
     baskol_number_empty?: number;
     baskol_number_full?: number;
   }) => {
@@ -64,7 +65,11 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
       baskol_number_empty: data.baskol_number_empty,
       baskol_number_full: data.baskol_number_full,
       server_accepted: false,
+      work_type: data.work,
+      work_type_id: data.work.id,
     };
+
+    console.log(d);
 
     dispatch(Activity_add(d));
 
@@ -84,6 +89,7 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
       weighing_type_id: a.Action.pk,
       Full: a.Full,
       Empty: a.Empty,
+      work_type_id: a.work_type_id,
     }));
 
     const response = await fetcher.post("activity/", data);

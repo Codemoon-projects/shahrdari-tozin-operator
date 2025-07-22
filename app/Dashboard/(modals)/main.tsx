@@ -76,11 +76,11 @@ export default function MainModal() {
       section: (
         <PlaqueSection
           baskolData={baskolData}
-          goNext={(car) => {
+          goNext={(car, selectedWork) => {
             createWithPlaque({
               Car: car,
               Action: modal.actionType as any,
-
+              work: selectedWork,
               ...(baskolData &&
                 (modal?.actionType?.type === "empty"
                   ? {

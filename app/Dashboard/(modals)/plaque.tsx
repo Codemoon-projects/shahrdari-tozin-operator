@@ -2,20 +2,33 @@
 
 import type React from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useState, useRef, useEffect } from "react";
 import { Camera, Search, X } from "lucide-react";
 import usePlaque from "@/hooks/usePlaque";
 import type { CarType } from "@/store/slices/Car";
 import Image from "next/image";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { openModal } from "@/store/core/modals";
 
-const PlaqueOTPInput = ({
+export interface ActionWorkType {
+  id: number;
+  name: string;
+}
+
+function PlaqueOTPInput({
   value,
   onChange,
 }: {
   value: string;
   onChange: (value: string) => void;
-}) => {
+}) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
   const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
 
@@ -83,10 +96,10 @@ const PlaqueOTPInput = ({
       ))}
     </div>
   );
-};
+}
 
 interface ModalProps {
-  goNext: (car: CarType) => void;
+  goNext: (car: CarType, selectedWork: ActionWorkType) => void;
   baskolData?: {
     plaque_number: string;
     baskol_number: 1 | 2 | 3;
@@ -107,6 +120,12 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
   const [filteredData, setFilteredData] = useState<CarType[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+  const [isWorkSelectionOpen, setIsWorkSelectionOpen] = useState(false);
+  const [selectedWork, setSelectedWork] = useState<ActionWorkType | null>(null);
+
+  const modal = useAppSelector((state) => state.modals.modals.mainModal);
+  const dispatch = useAppDispatch();
+  const works = modal?.actionType?.works || [];
 
   const handlePlaqueChange = (value: string) => {
     setSelectedPlaque(value);
@@ -130,6 +149,20 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
     if (car) {
       selectCar(car);
     }
+  };
+
+  const handleNextStep = () => {
+    if (works.length > 0) {
+      setIsWorkSelectionOpen(true);
+    } else {
+      goNext(selectedCar!);
+    }
+  };
+
+  const handleWorkSelection = (work: ActionWorkType) => {
+    setSelectedWork(work);
+    setIsWorkSelectionOpen(false);
+    goNext(selectedCar!, work);
   };
 
   return (
@@ -179,7 +212,7 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
                     <div className="flex gap-3">
                       <Button
                         className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
-                        onClick={() => goNext(selectedCar)}
+                        onClick={handleNextStep}
                       >
                         مرحله بعدی
                       </Button>
@@ -321,6 +354,41 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
           </div>
         </div>
       </div>
+
+      {/* Work Selection Dialog */}
+      <Dialog open={isWorkSelectionOpen} onOpenChange={setIsWorkSelectionOpen}>
+        <DialogContent className="max-w-md bg-white">
+          <DialogHeader>
+            <DialogTitle className="text-right">انتخاب نوع کار</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 max-h-96 overflow-y-auto">
+            {works.length > 0 ? (
+              works.map((work: ActionWorkType) => (
+                <Button
+                  key={work.id}
+                  variant="outline"
+                  className="w-full justify-start text-right h-auto py-3 px-4 hover:bg-blue-50 hover:border-blue-200 bg-transparent"
+                  onClick={() => handleWorkSelection(work)}
+                >
+                  <span className="font-medium">{work.name}</span>
+                </Button>
+              ))
+            ) : (
+              <div className="text-center py-8 text-gray-500">
+                <p>هیچ نوع کاری موجود نیست</p>
+              </div>
+            )}
+          </div>
+          <div className="flex justify-end gap-2 pt-4 border-t">
+            <Button
+              variant="outline"
+              onClick={() => setIsWorkSelectionOpen(false)}
+            >
+              انصراف
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

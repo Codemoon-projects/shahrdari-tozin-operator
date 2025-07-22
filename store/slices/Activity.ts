@@ -1,6 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { CarType } from "./Car";
-import { ActionType } from "./Action";
+import { ActionType, ActionWorkType } from "./Action";
 
 export interface ActivityType {
   pk: number;
@@ -11,6 +11,8 @@ export interface ActivityType {
   baskol_number_empty?: number;
   baskol_number_full?: number;
   server_accepted: boolean;
+  work_type: ActionWorkType;
+  work_type_id: number;
 }
 
 interface SliceType {

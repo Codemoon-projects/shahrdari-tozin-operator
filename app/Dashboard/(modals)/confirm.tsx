@@ -35,6 +35,7 @@ export default function Confirm({ goNext, goBack }: SectionProps) {
     empty_date: modal?.activity?.baskol_number_empty || "ثبت نشده",
     full_date: modal?.activity?.baskol_number_full || "ثبت نشده",
     net_weight: net_weight > 0 ? net_weight : "ناتمام",
+    work_name: modal?.activity?.work_type.name,
   };
 
   const handlePrint = async (exportType: ExprotTypes) => {

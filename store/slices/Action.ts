@@ -10,6 +10,10 @@ export interface UploadTypes {
   id: number;
   name: string;
 }
+export interface ActionWorkType {
+  id: number;
+  name: string;
+}
 
 export interface ActionType {
   pk: number;
@@ -17,6 +21,7 @@ export interface ActionType {
   type: "empty" | "full";
   exports: ExprotTypes[];
   uploads: UploadTypes[];
+  works: ActionWorkType[];
 }
 
 interface SliceType {
