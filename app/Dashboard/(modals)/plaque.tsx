@@ -88,10 +88,11 @@ interface ModalProps {
     plaque_number: string;
     baskol_number: 1 | 2 | 3;
     baskol_value: number;
+    image_link: string;
   };
 }
 
-export default function Plaque({ goNext }: ModalProps) {
+export default function Plaque({ goNext, baskolData }: ModalProps) {
   const { filterPlaques, selectCar, cars, selectedCar, clearSelectedCar } =
     usePlaque();
 
@@ -208,12 +209,16 @@ export default function Plaque({ goNext }: ModalProps) {
             </div>
             <div className="p-4">
               <div className="bg-gray-100 rounded-lg aspect-video flex items-center justify-center">
-                <div className="text-center">
-                  <div className="w-14 h-14 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Camera className="w-7 h-7 text-gray-600" />
+                {baskolData?.image_link ? (
+                  <img src={baskolData.image_link} className="w-full h-full" />
+                ) : (
+                  <div className="text-center">
+                    <div className="w-14 h-14 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
+                      <Camera className="w-7 h-7 text-gray-600" />
+                    </div>
+                    <p className="text-sm text-gray-500">در انتظار اتصال</p>
                   </div>
-                  <p className="text-sm text-gray-500">در انتظار اتصال</p>
-                </div>
+                )}
               </div>
             </div>
           </div>

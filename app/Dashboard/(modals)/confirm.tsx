@@ -3,7 +3,7 @@ import { Printer, Car, User, Scale, ChevronLeft } from "lucide-react";
 import usePlaque from "@/hooks/usePlaque";
 import { closeModal as closeModalAction } from "@/store/core/modals";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-
+import type { ExprotTypes } from "@/store/slices/Action";
 interface SectionProps {
   goNext: () => void;
   goBack: () => void;
@@ -13,15 +13,50 @@ export default function Confirm({ goNext, goBack }: SectionProps) {
   const { selectedCar } = usePlaque();
   const modal = useAppSelector((state) => state.modals.modals.mainModal);
   const exports = modal?.actionType?.exports || [];
-
   const dispatch = useAppDispatch();
 
   const closeModal = () => {
     dispatch(closeModalAction("mainModal"));
   };
 
-  const handlePrint = () => {
-    window.print();
+  const net_weight =
+    modal?.activity?.Full && modal?.activity?.Empty
+      ? modal?.activity?.Full - modal?.activity?.Empty
+      : -1;
+
+  const printReplaces = {
+    id: modal?.activity?.pk,
+    full: modal?.activity?.Full || "وزن نشده",
+    empty: modal?.activity?.Empty || "وزن نشده",
+    car_plaque: selectedCar?.license_plate,
+    car_type: selectedCar?.type__name,
+    driver_name: selectedCar?.driver.name,
+    baskol_number_empty: modal?.activity?.baskol_number_empty,
+    empty_date: modal?.activity?.baskol_number_empty || "ثبت نشده",
+    full_date: modal?.activity?.baskol_number_full || "ثبت نشده",
+    net_weight: net_weight > 0 ? net_weight : "ناتمام",
+  };
+
+  const handlePrint = async (exportType: ExprotTypes) => {
+    const printWindow = window.open("", "_blank");
+
+    if (!printWindow) {
+      return;
+    }
+
+    const finalPrint = Object.entries(printReplaces).reduce((print, [k, v]) => {
+      // if value is undefined go next
+      if (!v) return print;
+
+      // check value exists and replace in text
+      return print.replaceAll(`{{${k}}}`, v);
+    }, exportType.shema);
+
+    printWindow.document.write(
+      `<html dir="rtl"><body>${finalPrint}</body></html>`
+    );
+    printWindow.print();
+    printWindow.close();
   };
 
   if (!selectedCar) {
@@ -119,7 +154,7 @@ export default function Confirm({ goNext, goBack }: SectionProps) {
             </Button>
             {exports.map((a) => (
               <Button
-                onClick={handlePrint}
+                onClick={() => handlePrint(a)}
                 className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
               >
                 <Printer className="w-4 h-4" />

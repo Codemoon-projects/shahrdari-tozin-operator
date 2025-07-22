@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { Loader2, User, ChevronLeft } from "lucide-react";
 import { useActivity } from "@/hooks/useActivity";
-import { useAppSelector } from "@/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { cn } from "@/lib/utils";
+import { openModal } from "@/store/core/modals";
+import toast from "react-hot-toast";
 
 interface SectionInterface {
   goNext: () => void;
@@ -28,6 +30,9 @@ export default function WeightSection({
   const modal = useAppSelector((state) => state.modals.modals.mainModal);
   const [isCalculating, setIsCalculating] = useState(true);
   const [calculatedWeight, setCalculatedWeight] = useState<number | null>(null);
+  const dispatch = useAppDispatch();
+
+  console.log(selectedCar);
 
   useEffect(() => {
     if (baskolData) {
@@ -36,18 +41,36 @@ export default function WeightSection({
     }
   }, [baskolData]);
 
-  const handleSubmit = () => {
-    if (calculatedWeight) {
-      if (!modal?.activity) {
+  const handleSubmit = (value: number) => {
+    if (value) {
+      if (!modal?.activity || !modal.actionType) {
         return;
       }
 
-      updateWeight({
+      const newData = {
         ...modal.activity,
-        Empty: isEmptyWeightCalc ? calculatedWeight : modal.activity.Empty,
-        Full: isEmptyWeightCalc ? modal.activity.Full : calculatedWeight,
+        Empty: isEmptyWeightCalc ? value : modal.activity.Empty,
+        Full: isEmptyWeightCalc ? modal.activity.Full : value,
         server_accepted: false,
-      });
+      };
+
+      if (
+        newData?.Empty &&
+        newData?.Full &&
+        newData?.Full - newData?.Empty < 10
+      ) {
+        toast.error("وزن پر و خالی نمی تواند یکسان باشد");
+        return;
+      }
+
+      updateWeight(newData);
+      dispatch(
+        openModal({
+          name: "mainModal",
+          actionType: modal.actionType,
+          activity: newData,
+        })
+      );
       goNext();
     }
   };
@@ -108,7 +131,7 @@ export default function WeightSection({
                     </p>
                   </div>
 
-                  {!isEmptyWeightCalc && selectedCar.last_empty_weight && (
+                  {selectedCar.last_empty_weight && (
                     <div className="space-y-1">
                       <p className="text-sm text-gray-500 font-medium">
                         وزن خالی قبلی
@@ -129,7 +152,7 @@ export default function WeightSection({
               <h2 className="text-sm font-medium text-gray-600 mb-6">
                 {isEmptyWeightCalc ? "وزن خالی خودرو" : "وزن پر خودرو"}
               </h2>
-              {!!isCalculating ? (
+              {isCalculating ? (
                 <div className="flex items-center justify-center gap-3">
                   <Loader2 className="w-6 h-6 text-blue-600 animate-spin" />
                   <span className="text-base text-blue-600 font-medium">
@@ -156,7 +179,7 @@ export default function WeightSection({
                 type="button"
                 onClick={() => {
                   setCalculatedWeight(selectedCar.last_empty_weight);
-                  handleSubmit();
+                  handleSubmit(selectedCar.last_empty_weight);
                   setIsCalculating(false);
                 }}
                 className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 
@@ -168,7 +191,7 @@ export default function WeightSection({
             )}
             <Button
               type="submit"
-              onClick={handleSubmit}
+              onClick={() => handleSubmit(baskolData?.baskol_value || 0)}
               className={cn(
                 "px-8 py-2.5 rounded-lg font-medium transition-colors flex-1 sm:flex-none",
                 {

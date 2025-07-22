@@ -16,12 +16,13 @@ export default function MainModal() {
         plaque_number: string;
         baskol_number: 1 | 2 | 3;
         baskol_value: number;
+        image_link: string;
       }
     | undefined
   >();
 
   const modal = useAppSelector((state) => state.modals.modals.mainModal);
-  const { createWithPlaque } = useActivity("silent");
+  const { createWithPlaque, Activity_data } = useActivity("silent");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -66,6 +67,8 @@ export default function MainModal() {
   }, [modal]);
 
   if (!modal?.isOpen || !modal?.actionType) return null;
+
+  console.log(Activity_data);
 
   const steps = [
     {
