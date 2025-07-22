@@ -32,8 +32,6 @@ export default function WeightSection({
   const [calculatedWeight, setCalculatedWeight] = useState<number | null>(null);
   const dispatch = useAppDispatch();
 
-  console.log(selectedCar);
-
   useEffect(() => {
     if (baskolData) {
       setCalculatedWeight(baskolData?.baskol_value);

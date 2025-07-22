@@ -1,9 +1,12 @@
-import { Input } from "@/components/ui/input";
+"use client";
+
+import type React from "react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { useState, useRef, useEffect } from "react";
-import { Camera, Search } from "lucide-react";
+import { Camera, Search, X } from "lucide-react";
 import usePlaque from "@/hooks/usePlaque";
-import { CarType } from "@/store/slices/Car";
+import type { CarType } from "@/store/slices/Car";
 import Image from "next/image";
 
 const PlaqueOTPInput = ({
@@ -103,6 +106,7 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
   const [selectedPlaque, setSelectedPlaque] = useState("");
   const [filteredData, setFilteredData] = useState<CarType[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [isImageModalOpen, setIsImageModalOpen] = useState(false);
 
   const handlePlaqueChange = (value: string) => {
     setSelectedPlaque(value);
@@ -123,7 +127,6 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
 
   const handleSubmit = () => {
     const car = cars.find((c) => c.license_plate === selectedPlaque);
-
     if (car) {
       selectCar(car);
     }
@@ -158,7 +161,6 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
                       ثبت شده
                     </div>
                   </div>
-
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
                       <span className="text-gray-500">تاریخ بررسی:</span>
@@ -173,7 +175,6 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
                       </p>
                     </div>
                   </div>
-
                   <div className="pt-4 border-t border-gray-200">
                     <div className="flex gap-3">
                       <Button
@@ -198,6 +199,7 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
             </div>
           )}
         </div>
+
         {/* Left Column - Camera and Search */}
         <div className="space-y-6 w-96">
           {/* Camera Section */}
@@ -210,7 +212,38 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
             <div className="p-4">
               <div className="bg-gray-100 rounded-lg aspect-video flex items-center justify-center">
                 {baskolData?.image_link ? (
-                  <img src={baskolData.image_link} className="w-full h-full" />
+                  <Dialog
+                    open={isImageModalOpen}
+                    onOpenChange={setIsImageModalOpen}
+                  >
+                    <DialogTrigger asChild>
+                      <img
+                        key={`camera-${Date.now()}`}
+                        src={baskolData.image_link || "/placeholder.svg"}
+                        className="w-full h-full object-cover rounded-lg cursor-pointer hover:opacity-90 transition-opacity"
+                        alt="تصویر دوربین نظارت"
+                        onClick={() => setIsImageModalOpen(true)}
+                      />
+                    </DialogTrigger>
+                    <DialogContent className="max-w-4xl max-h-[90vh] p-0 overflow-hidden">
+                      <div className="relative">
+                        <img
+                          key={`camera-${Date.now()}`}
+                          src={baskolData.image_link || "/placeholder.svg"}
+                          className="w-full h-auto max-h-[85vh] object-contain"
+                          alt="تصویر دوربین نظارت - نمایش بزرگ"
+                        />
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="absolute top-2 right-2 bg-black/50 hover:bg-black/70 text-white rounded-full"
+                          onClick={() => setIsImageModalOpen(false)}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
                 ) : (
                   <div className="text-center">
                     <div className="w-14 h-14 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
@@ -249,7 +282,6 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
                         onChange={handlePlaqueChange}
                       />
                     </div>
-
                     {/* Dropdown */}
                     {showDropdown && cars.length > 0 && (
                       <div className="absolute top-full right-0 left-0 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto mt-1">
@@ -277,7 +309,6 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
                     )}
                   </div>
                 </div>
-
                 <Button
                   onClick={handleSubmit}
                   className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
