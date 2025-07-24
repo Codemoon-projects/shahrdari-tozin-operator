@@ -182,7 +182,7 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
                   <div className="flex items-center justify-between pb-4 border-b border-gray-200">
                     <div>
                       <p className="text-lg font-bold text-gray-900">
-                        {selectedCar.license_plate}
+                        ایران{selectedCar.license_plate_code}-{selectedCar.license_plate}
                       </p>
                       {selectedCar.driver && selectedCar.driver.name && (
                         <p className="text-sm text-gray-600">

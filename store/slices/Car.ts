@@ -10,6 +10,7 @@ export interface CarType {
   pk: number;
   driver: DriverType;
   license_plate: string;
+  license_plate_code:number
   type__name: string;
   last_empty_weight: number;
 }

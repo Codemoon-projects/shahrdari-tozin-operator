@@ -116,7 +116,8 @@ export default function WeightSection({
                       شماره پلاک
                     </p>
                     <p className="text-base text-gray-900 font-semibold">
-                      {selectedCar.license_plate}
+                    ایران{selectedCar.license_plate_code}-{selectedCar.license_plate}
+                    
                     </p>
                   </div>
 
