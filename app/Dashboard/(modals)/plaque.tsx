@@ -15,7 +15,6 @@ import usePlaque from "@/hooks/usePlaque";
 import type { CarType } from "@/store/slices/Car";
 import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { openModal } from "@/store/core/modals";
 
 export interface ActionWorkType {
   id: number;
