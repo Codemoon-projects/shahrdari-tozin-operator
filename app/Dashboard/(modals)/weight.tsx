@@ -48,7 +48,7 @@ export default function WeightSection({
       const newData = {
         ...modal.activity,
         Empty: isEmptyWeightCalc ? value : modal.activity.Empty,
-        Full: isEmptyWeightCalc ? modal.activity.Full : value,
+        Full: isEmptyWeightCalc ? modal.activity.Full : 100000,
         server_accepted: false,
       };
 
@@ -116,8 +116,8 @@ export default function WeightSection({
                       شماره پلاک
                     </p>
                     <p className="text-base text-gray-900 font-semibold">
-                    ایران{selectedCar.license_plate_code}-{selectedCar.license_plate}
-                    
+                      ایران{selectedCar.license_plate_code}-
+                      {selectedCar.license_plate}
                     </p>
                   </div>
 

@@ -9,6 +9,8 @@ export interface ExprotTypes {
 export interface UploadTypes {
   id: number;
   name: string;
+  description: string;
+  required: boolean;
 }
 export interface ActionWorkType {
   id: number;

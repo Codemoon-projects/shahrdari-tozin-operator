@@ -13,6 +13,7 @@ export interface ActivityType {
   server_accepted: boolean;
   work_type: ActionWorkType;
   work_type_id: number;
+  address?: string;
 }
 
 interface SliceType {

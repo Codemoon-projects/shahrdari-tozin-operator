@@ -29,12 +29,12 @@ function PlaqueOTPInput({
   onChange: (value: string) => void;
 }) {
   const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
-  const [otp, setOtp] = useState<string[]>(Array(6).fill(""));
+  const [otp, setOtp] = useState<string[]>(Array(8).fill(""));
 
   useEffect(() => {
     const newOtp = value.split("");
     setOtp(
-      Array(6)
+      Array(8)
         .fill("")
         .map((_, index) => {
           if (newOtp.length > index) {
@@ -76,7 +76,7 @@ function PlaqueOTPInput({
 
   return (
     <div
-      className="flex gap-2 justify-center z-50 pr-20 pl-10 h-full"
+      className="flex gap-2 justify-center items-center z-50 pr-20 pl-10 h-full"
       dir="ltr"
     >
       {otp.map((digit, index) => (
@@ -90,7 +90,10 @@ function PlaqueOTPInput({
           value={digit}
           onChange={(e) => handleInputChange(index, e.target.value)}
           onKeyDown={(e) => handleKeyDown(index, e)}
-          className="text-center text-3xl font-bold w-5 outline-none bg-white/10"
+          className={`text-center text-3xl font-bold w-5 outline-none  ${
+            index === 6 ? " absolute right-10" : "bg-white/10"
+          }
+          ${index === 7 ? "absolute right-6" : "bg-white/10"}`}
         />
       ))}
     </div>
@@ -138,13 +141,16 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
     }
   };
 
-  const handlePlaqueSelect = (plaque: string) => {
+  const handlePlaqueSelect = (plaque: string, code: string) => {
+    plaque = `${plaque}${code}`;
     setSelectedPlaque(plaque);
     setShowDropdown(false);
   };
 
   const handleSubmit = () => {
-    const car = cars.find((c) => c.license_plate === selectedPlaque);
+    const car = cars.find(
+      (c) => `${c.license_plate}${c.license_plate_code}` === selectedPlaque
+    );
     if (car) {
       selectCar(car);
     }
@@ -181,7 +187,8 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
                   <div className="flex items-center justify-between pb-4 border-b border-gray-200">
                     <div>
                       <p className="text-lg font-bold text-gray-900">
-                        ایران{selectedCar.license_plate_code}-{selectedCar.license_plate}
+                        ایران{selectedCar.license_plate_code}-
+                        {selectedCar.license_plate}
                       </p>
                       {selectedCar.driver && selectedCar.driver.name && (
                         <p className="text-sm text-gray-600">
@@ -321,14 +328,22 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
                           <button
                             key={item.pk}
                             onClick={() =>
-                              handlePlaqueSelect(item.license_plate)
+                              handlePlaqueSelect(
+                                item.license_plate,
+                                String(item.license_plate_code)
+                              )
                             }
                             className="w-full px-4 py-3 text-right hover:bg-gray-50 border-b border-gray-100 last:border-b-0 text-sm"
                           >
                             <div className="flex justify-between items-center">
-                              <span className="font-medium text-gray-900">
-                                {item.license_plate}
-                              </span>
+                              <div className="flex flex-row">
+                                <span className="font-medium text-gray-900">
+                                  {item.license_plate_code}
+                                </span>
+                                <span className="font-medium text-gray-900">
+                                  -{item.license_plate}
+                                </span>
+                              </div>
                               <span className="text-xs text-gray-500">
                                 {item.driver && item.driver.name
                                   ? item.driver.name

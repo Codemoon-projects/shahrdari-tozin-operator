@@ -69,8 +69,6 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
       work_type_id: data.work.id,
     };
 
-    console.log(d);
-
     dispatch(Activity_add(d));
 
     dispatch(
@@ -84,6 +82,7 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
 
   const sendDataServer = async () => {
     const data = Activity_data.filter((a) => !a.server_accepted).map((a) => ({
+      ...a,
       id: a.pk,
       vehicle_id: a.Car.pk,
       weighing_type_id: a.Action.pk,

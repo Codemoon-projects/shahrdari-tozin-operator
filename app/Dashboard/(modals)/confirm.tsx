@@ -1,9 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { Printer, Car, User, Scale, ChevronLeft } from "lucide-react";
+import { Button, Input } from "@/components/ui/button"; // فرض بر اینکه Input از ui دارید، اگر نه باید از shadcn/ui یا هر کتابخانه‌ای بگیرید
+import { Printer, Car, User, Scale, ChevronLeft, Upload } from "lucide-react";
 import usePlaque from "@/hooks/usePlaque";
 import { closeModal as closeModalAction } from "@/store/core/modals";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import type { ExprotTypes } from "@/store/slices/Action";
+import type { ExprotTypes, UploadTypes } from "@/store/slices/Action";
+import { useState } from "react";
+
 interface SectionProps {
   goNext: () => void;
   goBack: () => void;
@@ -13,9 +15,27 @@ export default function Confirm({ goNext, goBack }: SectionProps) {
   const { selectedCar } = usePlaque();
   const modal = useAppSelector((state) => state.modals.modals.mainModal);
   const exports = modal?.actionType?.exports || [];
+  const uploads: UploadTypes[] = modal?.actionType?.uploads || []; // اضافه کردن آپلودها
   const dispatch = useAppDispatch();
 
+  const [address, setAddress] = useState("");
+  const [uploadedFiles, setUploadedFiles] = useState<
+    Record<number, File | null>
+  >({});
+  const [error, setError] = useState<string | null>(null);
+
   const closeModal = () => {
+    const missingRequired = uploads.filter(
+      (u) => u.required && !uploadedFiles[u.id]
+    );
+
+    if (missingRequired.length > 0) {
+      setError("لطفاً تمام مدارک اجباری را بارگذاری کنید.");
+      return;
+    }
+
+    setError(null);
+
     dispatch(closeModalAction("mainModal"));
   };
 
@@ -36,20 +56,15 @@ export default function Confirm({ goNext, goBack }: SectionProps) {
     full_date: modal?.activity?.baskol_number_full || "ثبت نشده",
     net_weight: net_weight > 0 ? net_weight : "ناتمام",
     work_name: modal?.activity?.work_type.name,
+    address: address,
   };
 
   const handlePrint = async (exportType: ExprotTypes) => {
     const printWindow = window.open("", "_blank");
-
-    if (!printWindow) {
-      return;
-    }
+    if (!printWindow) return;
 
     const finalPrint = Object.entries(printReplaces).reduce((print, [k, v]) => {
-      // if value is undefined go next
       if (!v) return print;
-
-      // check value exists and replace in text
       return print.replaceAll(`{{${k}}}`, v);
     }, exportType.shema);
 
@@ -58,6 +73,10 @@ export default function Confirm({ goNext, goBack }: SectionProps) {
     );
     printWindow.print();
     printWindow.close();
+  };
+
+  const handleFileChange = (id: number, file: File | null) => {
+    setUploadedFiles((prev) => ({ ...prev, [id]: file }));
   };
 
   if (!selectedCar) {
@@ -76,7 +95,8 @@ export default function Confirm({ goNext, goBack }: SectionProps) {
     <div className="max-w-4xl mx-auto p-6">
       <div className="bg-white rounded-lg">
         {/* Main Content */}
-        <div className="p-6">
+        <div className="p-6 space-y-6">
+          {/* اطلاعات خودرو / راننده / وزن */}
           <div className="grid grid-cols-3 gap-6">
             {/* Car Information */}
             <div className="bg-gray-50 rounded-lg p-4 hover:shadow-md transition-shadow">
@@ -142,7 +162,62 @@ export default function Confirm({ goNext, goBack }: SectionProps) {
               </div>
             </div>
           </div>
+
+          {/* Address Input */}
+          <div>
+            <label className="block mb-2 text-sm font-medium text-gray-700">
+              آدرس
+            </label>
+            <input
+              type="text"
+              required={true}
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              placeholder="آدرس را وارد کنید"
+              className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          {/* Upload Section */}
+          {uploads.length > 0 && (
+            <div>
+              <h3 className="font-medium text-gray-700 mb-4">آپلود مدارک</h3>
+              <div className="space-y-4">
+                {uploads.map((u) => (
+                  <div
+                    key={u.id}
+                    className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border p-3 rounded-lg"
+                  >
+                    <div className="flex-1">
+                      <p className="font-medium">{u.name}</p>
+                      <p className="text-sm text-gray-500">{u.description}</p>
+                      {u.required && (
+                        <p className="text-xs text-red-500">* اجباری</p>
+                      )}
+                    </div>
+                    <label className="flex items-center gap-2 cursor-pointer">
+                      <Upload className="w-4 h-4 text-blue-600" />
+                      <input
+                        type="file"
+                        className="hidden"
+                        onChange={(e) =>
+                          handleFileChange(
+                            u.id,
+                            e.target.files ? e.target.files[0] : null
+                          )
+                        }
+                      />
+                      <span className="text-sm text-blue-600">
+                        {uploadedFiles[u.id]?.name || "انتخاب فایل"}
+                      </span>
+                    </label>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
+        {error && <p className="text-sm text-red-600 font-medium">{error}</p>}
 
         {/* Actions */}
         <div className="flex justify-between gap-4 p-6 border-t border-gray-100">
@@ -155,6 +230,7 @@ export default function Confirm({ goNext, goBack }: SectionProps) {
             </Button>
             {exports.map((a) => (
               <Button
+                key={a.name}
                 onClick={() => handlePrint(a)}
                 className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
               >
