@@ -68,8 +68,6 @@ export default function MainModal() {
 
   if (!modal?.isOpen || !modal?.actionType) return null;
 
-  console.log(Activity_data);
-
   const steps = [
     {
       title: "جستجوی پلاک",

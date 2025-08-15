@@ -39,6 +39,7 @@ const coreSlice = createSlice({
     changeMessage: (state, action: PayloadAction<appMessageType>) => {
       state.message = action.payload;
     },
+
     clearMessage: (state) => {
       state.message = {
         type: "",

@@ -160,7 +160,7 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
     if (works.length > 0) {
       setIsWorkSelectionOpen(true);
     } else {
-      goNext(selectedCar!);
+      goNext(selectedCar!, selectedWork!);
     }
   };
 

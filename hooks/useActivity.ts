@@ -91,6 +91,8 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
       work_type_id: a.work_type_id,
     }));
 
+    console.log(data);
+
     const response = await fetcher.post("activity/", data);
 
     const serverData = response.data.Weighing;

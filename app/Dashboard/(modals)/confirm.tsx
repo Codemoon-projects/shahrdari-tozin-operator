@@ -1,10 +1,15 @@
-import { Button, Input } from "@/components/ui/button"; // فرض بر اینکه Input از ui دارید، اگر نه باید از shadcn/ui یا هر کتابخانه‌ای بگیرید
+import { Button } from "@/components/ui/button"; // فرض بر اینکه Input از ui دارید، اگر نه باید از shadcn/ui یا هر کتابخانه‌ای بگیرید
 import { Printer, Car, User, Scale, ChevronLeft, Upload } from "lucide-react";
 import usePlaque from "@/hooks/usePlaque";
 import { closeModal as closeModalAction } from "@/store/core/modals";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import type { ExprotTypes, UploadTypes } from "@/store/slices/Action";
 import { useState } from "react";
+import {
+  Activity_add,
+  Activity_update,
+  ActivityType,
+} from "@/store/slices/Activity";
 
 interface SectionProps {
   goNext: () => void;
@@ -25,6 +30,9 @@ export default function Confirm({ goNext, goBack }: SectionProps) {
   const [error, setError] = useState<string | null>(null);
 
   const closeModal = () => {
+    const data = { ...modal?.activity, address } as unknown as ActivityType;
+    dispatch(Activity_add(data));
+
     const missingRequired = uploads.filter(
       (u) => u.required && !uploadedFiles[u.id]
     );
@@ -65,7 +73,7 @@ export default function Confirm({ goNext, goBack }: SectionProps) {
 
     const finalPrint = Object.entries(printReplaces).reduce((print, [k, v]) => {
       if (!v) return print;
-      return print.replaceAll(`{{${k}}}`, v);
+      return print.replaceAll(`{{${k}}}`, v as string);
     }, exportType.shema);
 
     printWindow.document.write(
