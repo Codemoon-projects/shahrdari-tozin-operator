@@ -48,7 +48,7 @@ export default function WeightSection({
       const newData = {
         ...modal.activity,
         Empty: isEmptyWeightCalc ? value : modal.activity.Empty,
-        Full: isEmptyWeightCalc ? modal.activity.Full : 100000,
+        Full: isEmptyWeightCalc ? modal.activity.Full : modal.activity.Full,
         server_accepted: false,
       };
 
