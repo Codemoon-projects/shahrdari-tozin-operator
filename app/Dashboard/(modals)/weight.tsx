@@ -1,36 +1,31 @@
-import usePlaque from "@/hooks/usePlaque";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { Loader2, User, ChevronLeft } from "lucide-react";
-import { useActivity } from "@/hooks/useActivity";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { cn } from "@/lib/utils";
-import { openModal } from "@/store/core/modals";
-import toast from "react-hot-toast";
+import { ModalStep } from "@/store/core/modals";
+import { useModals } from "@/hooks/useModal";
+import { useMid } from "@/hooks/useMid";
 
-interface SectionInterface {
-  goNext: () => void;
-  goBack: () => void;
-  isEmptyWeightCalc: boolean;
-  baskolData?: {
-    plaque_number: string;
-    baskol_number: 1 | 2 | 3;
-    baskol_value: number;
-  };
-}
-
-export default function WeightSection({
-  goNext,
-  goBack,
-  isEmptyWeightCalc,
-  baskolData,
-}: SectionInterface) {
-  const { selectedCar } = usePlaque();
-  const { updateWeight } = useActivity("silent");
-  const modal = useAppSelector((state) => state.modals.modals.mainModal);
+export default function WeightSection() {
   const [isCalculating, setIsCalculating] = useState(true);
+  const {
+    goNext,
+    goPervious,
+    selectedCar,
+    actionType,
+    updateCurrentData,
+    step,
+  } = useModals();
   const [calculatedWeight, setCalculatedWeight] = useState<number | null>(null);
-  const dispatch = useAppDispatch();
+  const { baskolData } = useMid();
+
+  const isEmptyWeightCalc = step === ModalStep.WEIGHTING_EMPTY;
+
+  const currentStep = isEmptyWeightCalc
+    ? ModalStep.WEIGHTING_EMPTY
+    : ModalStep.WEIGHTING_FULL;
+
+  const currentKey = isEmptyWeightCalc ? "empltyWeghting" : "fullWeghting";
 
   useEffect(() => {
     if (baskolData) {
@@ -39,37 +34,27 @@ export default function WeightSection({
     }
   }, [baskolData]);
 
+  const goBack = () => {
+    goPervious(currentStep);
+  };
+
   const handleSubmit = (value: number) => {
     if (value) {
-      if (!modal?.activity || !modal.actionType) {
-        return;
-      }
+      // if (!modal?.activity || !modal.actionType) {
+      //   return;
+      // }
 
-      const newData = {
-        ...modal.activity,
-        Empty: isEmptyWeightCalc ? value : modal.activity.Empty,
-        Full: isEmptyWeightCalc ? modal.activity.Full : modal.activity.Full,
-        server_accepted: false,
-      };
+      // const valueChecked = {
+      //   ...modal.activity,
+      //   Empty: isEmptyWeightCalc ? value : modal.activity.Empty,
+      //   Full: isEmptyWeightCalc ? modal.activity.Full : modal.activity.Full,
+      //   server_accepted: false,
+      // };
 
-      if (
-        newData?.Empty &&
-        newData?.Full &&
-        newData?.Full - newData?.Empty < 10
-      ) {
-        toast.error("وزن پر و خالی نمی تواند یکسان باشد");
-        return;
-      }
+      updateCurrentData(currentKey, value);
+      console.log(actionType?.type);
 
-      updateWeight(newData);
-      dispatch(
-        openModal({
-          name: "mainModal",
-          actionType: modal.actionType,
-          activity: newData,
-        })
-      );
-      goNext();
+      goNext(currentStep);
     }
   };
 

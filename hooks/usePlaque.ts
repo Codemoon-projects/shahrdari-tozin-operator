@@ -15,29 +15,13 @@ export default function usePlaque() {
 
   const fetchCarData = async () => {
     const response = await fetcher.get("cars/");
+    console.log(response.data);
+
     dispatch(Car_set(response.data));
   };
 
-  const selectCar = (car: CarType) => {
-    dispatch(temp_selectCar({ car }));
-  };
-
-  const clearSelectedCar = () => {
-    dispatch(temp_selectCar({ car: null }));
-  };
-
-  const filterPlaques = (searchTerm: string): CarType[] => {
-    if (!searchTerm) return cars;
-    return cars.filter((car) =>
-      car.license_plate.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  };
-
   return {
-    filterPlaques,
-    selectCar,
     cars,
     selectedCar,
-    clearSelectedCar,
   };
 }

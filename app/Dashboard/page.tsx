@@ -1,7 +1,5 @@
 "use client";
 
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { openModal } from "@/store/core/modals";
 import { type ActionType } from "@/store/slices/Action";
 import ActionItem from "@/components/Action/itemlist";
 import ActivityTable from "@/components/Activity/ActivityTable";
@@ -11,19 +9,21 @@ import { useAction } from "@/hooks/useAction";
 import { useActivity } from "@/hooks/useActivity";
 import { useEffect, useState } from "react";
 import ActionModal from "./(modals)/main";
-import { Modal } from "@/components/ui/modal";
 import { useCar } from "@/hooks/useCar";
+import { useModals } from "@/hooks/useModal";
+import ReportModal from "@/components/Car/ReportModal";
+import usePlaque from "@/hooks/usePlaque";
 
 export default function () {
   const { Action_list, get_Action_list_list_712daa } = useAction();
+  const _ = usePlaque();
   const {
     Activity_data,
     get_Activity_list_list_d2bfc9,
     sendDataServer: sendActivityData,
   } = useActivity();
   const { sendReport } = useCar("silent");
-  const modal = useAppSelector((state) => state.modals.modals.mainModal);
-  const dispatch = useAppDispatch();
+  const { openPlaque, isOpen } = useModals();
   const [messageModalOpen, setMessageModalOpen] = useState<
     null | "violation" | "vehicle"
   >(null);
@@ -39,8 +39,8 @@ export default function () {
   const [online, setOnline] = useState(true);
   const [success, setSuccess] = useState(false);
 
-  const onClickComponent = (d: ActionType) => {
-    dispatch(openModal({ name: "mainModal", actionType: d }));
+  const openPlaqueFromButton = (actionType: ActionType) => {
+    openPlaque({ actionType });
   };
 
   const handleStatusChange = (status: boolean) => {
@@ -51,7 +51,6 @@ export default function () {
   const handleOpenModal = (type: "violation" | "vehicle") => {
     setMessageModalOpen(type);
     setReportType(type === "violation" ? "violation" : "vehicle");
-    dispatch(openModal({ name: "customMessageModal" } as any));
     setDriverName("");
     setDriverNumber("");
     setCarPlaque("");
@@ -103,10 +102,10 @@ export default function () {
   }, []);
 
   useEffect(() => {
-    if (online && !modal?.isOpen) {
+    if (online && !isOpen) {
       sendActivityData();
     }
-  }, [Activity_data, online, modal]);
+  }, [Activity_data, online, isOpen]);
 
   const hasActions = Action_list.length > 0;
   const hasActivities = Activity_data.length > 0;
@@ -167,7 +166,7 @@ export default function () {
                   <div className="flex flex-col gap-2 w-full">
                     {Action_list.map((d, i) => (
                       <button
-                        onClick={() => onClickComponent(d)}
+                        onClick={() => openPlaqueFromButton(d)}
                         key={i}
                         className="bg-white hover:bg-gray-50 transition-all duration-200 rounded-lg border border-gray-200 py-2 px-3 text-right shadow-sm hover:shadow flex items-center justify-between group"
                       >
@@ -259,96 +258,27 @@ export default function () {
       </main>
       <ActionModal />
       {messageModalOpen && (
-        <Modal __name__="customMessageModal">
-          <div className="w-96">
-            <h2 className="text-lg font-bold mb-4 text-gray-800 text-center">
-              {messageModalOpen === "violation"
-                ? "گزارش تخلف"
-                : "درخواست ماشین جدید"}
-            </h2>
-            {success ? (
-              <div className="text-green-600 text-center mb-4">
-                پیام با موفقیت ارسال شد.
-              </div>
-            ) : (
-              <>
-                <input
-                  className="w-full border border-gray-300 rounded-lg p-2 mb-2"
-                  placeholder="نام راننده"
-                  value={driverName}
-                  onChange={(e) => setDriverName(e.target.value)}
-                  disabled={loading}
-                />
-                <input
-                  className="w-full border border-gray-300 rounded-lg p-2 mb-2"
-                  placeholder="شماره تماس"
-                  value={driverNumber}
-                  onChange={(e) => setDriverNumber(e.target.value)}
-                  disabled={loading}
-                />
-                <input
-                  className="w-full border border-gray-300 rounded-lg p-2 mb-2"
-                  placeholder="پلاک ماشین"
-                  value={carPlaque}
-                  onChange={(e) => setCarPlaque(e.target.value)}
-                  disabled={loading}
-                />
-                <input
-                  className="w-full border border-gray-300 rounded-lg p-2 mb-2"
-                  placeholder="نوع ماشین"
-                  value={carType}
-                  onChange={(e) => setCarType(e.target.value)}
-                  disabled={loading}
-                />
-                <input
-                  className="w-full border border-gray-300 rounded-lg p-2 mb-2"
-                  placeholder="نام شرکت"
-                  value={companyName}
-                  onChange={(e) => setCompanyName(e.target.value)}
-                  disabled={loading}
-                />
-                <select
-                  className="w-full border border-gray-300 rounded-lg p-2 mb-2"
-                  value={reportType}
-                  onChange={(e) => setReportType(e.target.value)}
-                  disabled={loading}
-                >
-                  <option value="violation">گزارش تخلف</option>
-                  <option value="request_car">درخواست ماشین جدید</option>
-                </select>
-                <textarea
-                  className="w-full border border-gray-300 rounded-lg p-2 mb-4 min-h-[100px]"
-                  placeholder="توضیحات"
-                  value={desc}
-                  onChange={(e) => setDesc(e.target.value)}
-                  disabled={loading}
-                />
-                <button
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg font-medium transition-colors disabled:opacity-50"
-                  onClick={handleSendMessage}
-                  disabled={
-                    loading ||
-                    !driverName.trim() ||
-                    !driverNumber.trim() ||
-                    !carPlaque.trim() ||
-                    !carType.trim() ||
-                    !companyName.trim() ||
-                    !desc.trim()
-                  }
-                >
-                  {loading ? "در حال ارسال..." : "ارسال"}
-                </button>
-              </>
-            )}
-            <button
-              className="w-full mt-2 bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 rounded-lg font-medium transition-colors"
-              onClick={handleCloseModal}
-              disabled={loading}
-            >
-              بستن
-            </button>
-          </div>
-        </Modal>
+        <ReportModal
+          messageModalOpen={messageModalOpen}
+          reportType={reportType as typeof messageModalOpen}
+          handleCloseModal={handleCloseModal}
+          handleSendMessage={handleSendMessage}
+          success={success}
+          loading={loading}
+          driverName={driverName}
+          driverNumber={driverNumber}
+          carPlaque={carPlaque}
+          carType={carType}
+          companyName={companyName}
+          desc={desc}
+          setDriverName={setDriverName}
+          setDriverNumber={setDriverNumber}
+          setCarPlaque={setCarPlaque}
+          setCarType={setCarType}
+          setCompanyName={setCompanyName}
+          setReportType={setReportType}
+          setDesc={setDesc}
+        />
       )}
     </>
   );

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Define which routes should be protected
-const PUBLIC_ROUTES = ["/login"];
+const PUBLIC_ROUTES = ["/"];
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get("accessToken")?.value;
@@ -14,7 +14,7 @@ export function middleware(req: NextRequest) {
 
   // If on a protected route and no token, redirect to login
   if (!token) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    return NextResponse.redirect(new URL("/", req.url));
   }
 
   // If on login page with token, redirect to dashboard

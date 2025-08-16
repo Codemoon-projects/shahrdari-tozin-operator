@@ -70,13 +70,9 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
     };
 
     dispatch(Activity_add(d));
-
-    dispatch(
-      openModal({ name: "mainModal", actionType: data.Action, activity: d })
-    );
   };
 
-  const updateWeight = async (data: ActivityType) => {
+  const setActivity = async (data: ActivityType) => {
     dispatch(Activity_update({ data, pk: data.pk }));
   };
 
@@ -91,16 +87,20 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
       work_type_id: a.work_type_id,
     }));
 
-    console.log(data);
+    console.log("data", data);
+
+    if (!data) return;
 
     const response = await fetcher.post("activity/", data);
 
     const serverData = response.data.Weighing;
-    dispatch(
-      Activity_set(
-        serverData.map((a: any) => ({ ...a, server_accepted: true }))
-      )
-    );
+
+    if (serverData)
+      dispatch(
+        Activity_set(
+          serverData.map((a: any) => ({ ...a, server_accepted: true }))
+        )
+      );
   };
 
   useEffect(() => {
@@ -115,7 +115,7 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
     get_activity_list,
     get_Activity_list_list_d2bfc9: get_activity_list,
     createWithPlaque,
-    updateWeight,
+    setActivity,
     sendDataServer,
   };
 }

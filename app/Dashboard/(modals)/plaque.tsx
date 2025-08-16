@@ -14,7 +14,8 @@ import { Camera, Search, X } from "lucide-react";
 import usePlaque from "@/hooks/usePlaque";
 import type { CarType } from "@/store/slices/Car";
 import Image from "next/image";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { useModals } from "@/hooks/useModal";
+import { ModalStep } from "@/store/core/modals";
 
 export interface ActionWorkType {
   id: number;
@@ -101,7 +102,6 @@ function PlaqueOTPInput({
 }
 
 interface ModalProps {
-  goNext: (car: CarType, selectedWork: ActionWorkType) => void;
   baskolData?: {
     plaque_number: string;
     baskol_number: 1 | 2 | 3;
@@ -110,30 +110,39 @@ interface ModalProps {
   };
 }
 
-export default function Plaque({ goNext, baskolData }: ModalProps) {
-  const { filterPlaques, selectCar, cars, selectedCar, clearSelectedCar } =
-    usePlaque();
-
-  useEffect(() => {
-    clearSelectedCar();
-  }, []);
-
+export default function Plaque({ baskolData }: ModalProps) {
+  const { cars } = usePlaque();
   const [selectedPlaque, setSelectedPlaque] = useState("");
   const [filteredData, setFilteredData] = useState<CarType[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isWorkSelectionOpen, setIsWorkSelectionOpen] = useState(false);
-  const [selectedWork, setSelectedWork] = useState<ActionWorkType | null>(null);
 
-  const modal = useAppSelector((state) => state.modals.modals.mainModal);
-  const dispatch = useAppDispatch();
-  const works = modal?.actionType?.works || [];
+  const { goNext, actionType, updateCurrentData, selectedActivity } =
+    useModals();
+
+  const works = actionType?.works || [];
+
+  const [selectedCar, selectedCarHandler] = useState<CarType | undefined>(
+    undefined
+  );
+
+  const filterPlaques = (searchTerm: string) => {
+    if (!searchTerm) return;
+    const filterCars = cars.filter((car) =>
+      car.license_plate.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredData(filterCars);
+  };
+  useEffect(() => {
+    selectedCarHandler(selectedActivity?.Car);
+    setFilteredData(cars);
+  }, []);
 
   const handlePlaqueChange = (value: string) => {
     setSelectedPlaque(value);
     if (value.length > 0) {
-      const filtered = filterPlaques(value);
-      setFilteredData(filtered);
+      filterPlaques(value);
       setShowDropdown(true);
     } else {
       setFilteredData([]);
@@ -152,7 +161,8 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
       (c) => `${c.license_plate}${c.license_plate_code}` === selectedPlaque
     );
     if (car) {
-      selectCar(car);
+      selectedCarHandler(car);
+      updateCurrentData("car", car);
     }
   };
 
@@ -160,14 +170,15 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
     if (works.length > 0) {
       setIsWorkSelectionOpen(true);
     } else {
-      goNext(selectedCar!, selectedWork!);
+      goNext(ModalStep.PLAQUE);
     }
   };
 
   const handleWorkSelection = (work: ActionWorkType) => {
-    setSelectedWork(work);
     setIsWorkSelectionOpen(false);
-    goNext(selectedCar!, work);
+
+    updateCurrentData("selectedWork", work);
+    goNext(ModalStep.PLAQUE);
   };
 
   return (
@@ -324,7 +335,7 @@ export default function Plaque({ goNext, baskolData }: ModalProps) {
                     {/* Dropdown */}
                     {showDropdown && cars.length > 0 && (
                       <div className="absolute top-full right-0 left-0 bg-white border border-gray-200 rounded-lg shadow-lg z-10 max-h-48 overflow-y-auto mt-1">
-                        {cars.map((item) => (
+                        {filteredData.map((item) => (
                           <button
                             key={item.pk}
                             onClick={() =>

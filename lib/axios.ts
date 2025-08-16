@@ -42,7 +42,6 @@ fetcher.interceptors.response.use(
         response.data.detail || response.data.error || "unknown error"
       );
     } else if (response.data.detail) {
-      toast.success(response.data.detail);
     }
 
     return response;

@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { ActionType } from "../slices/Action";
+import { ActionType, ActionWorkType } from "../slices/Action";
 import { ActivityType } from "../slices/Activity";
 import { CarType } from "../slices/Car";
 
@@ -9,22 +9,28 @@ export type appMessageType = {
   desc: string;
 };
 
-export type modals = "mainModal" | "customMessageModal";
+export enum ModalStep {
+  PLAQUE,
+  WEIGHTING_FULL,
+  WEIGHTING_EMPTY,
+  CONFIRM,
+}
 
 export type coreType = {
-  modals: {
-    [key in modals]?: {
-      isOpen?: boolean;
-      actionType?: ActionType;
-      activity?: ActivityType;
-      car?: CarType;
-    };
+  modals?: {
+    step: ModalStep;
+    actionType: ActionType;
+    activity?: ActivityType;
+    car?: CarType;
+    selectedWork?: ActionWorkType;
+    fullWeghting?: number;
+    empltyWeghting?: number;
+    address?: string;
   };
   message: appMessageType;
 };
 
 const initialState: coreType = {
-  modals: {},
   message: {
     type: "",
     title: "",
@@ -50,20 +56,22 @@ const coreSlice = createSlice({
     openModal: (
       state,
       action: PayloadAction<{
-        name: modals;
+        step: ModalStep;
         actionType: ActionType;
         activity?: ActivityType;
         car?: CarType;
+        selectedWork?: ActionWorkType;
+        fullWeghting?: number;
+        empltyWeghting?: number;
+        address?: string;
       }>
     ) => {
-      state.modals[action.payload.name] = {
-        isOpen: true,
-        actionType: action.payload.actionType,
-        activity: action.payload.activity,
-      };
+      console.log("payload", action.payload);
+
+      state.modals = { ...state.modals, ...action.payload };
     },
-    closeModal: (state, action: PayloadAction<modals>) => {
-      state.modals[action.payload] = undefined;
+    closeModal: (state) => {
+      state.modals = undefined;
     },
   },
 });

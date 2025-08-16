@@ -4,6 +4,8 @@ import * as React from "react";
 import { Check, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useModals } from "@/hooks/useModal";
+import { ModalStep } from "@/store/core/modals";
 
 interface StepProps {
   title: string;
@@ -25,7 +27,7 @@ const Step: React.FC<StepProps> = ({
           className={cn(
             "w-8 h-8 rounded-full border-2 flex items-center justify-center",
             isCompleted
-              ? "border-primary bg-primary text-primary-foreground"
+              ? "border-primary bg-primary text-white"
               : isActive
               ? "border-primary"
               : "border-muted"
@@ -57,12 +59,53 @@ const Step: React.FC<StepProps> = ({
   );
 };
 
-interface StepperProps {
-  steps: Array<{ title: string; description?: string }>;
-  currentStep: number;
-}
+export function Stepper() {
+  const {
+    step: currentStep,
+    selectedCar,
+    empltyWeghting,
+    fullWeghting,
+    actionType,
+  } = useModals();
 
-export function Stepper({ steps, currentStep }: StepperProps) {
+  const steps = [
+    {
+      title: "پلاک",
+      isCompleted: !!selectedCar,
+      step: ModalStep.PLAQUE,
+    },
+    ...(actionType?.type === "empty"
+      ? [
+          {
+            step: ModalStep.WEIGHTING_EMPTY,
+            title: "وزن خالی",
+            isCompleted: empltyWeghting,
+          },
+          {
+            title: "وزن پر",
+            isCompleted: fullWeghting,
+            step: ModalStep.WEIGHTING_FULL,
+          },
+        ]
+      : [
+          {
+            title: "وزن پر",
+            isCompleted: fullWeghting,
+            step: ModalStep.WEIGHTING_FULL,
+          },
+          {
+            step: ModalStep.WEIGHTING_EMPTY,
+            title: "وزن خالی",
+            isCompleted: empltyWeghting,
+          },
+        ]),
+    {
+      step: ModalStep.CONFIRM,
+      title: "تایید",
+      isCompleted: currentStep === ModalStep.CONFIRM,
+    },
+  ];
+
   return (
     <div className="w-full max-w-3xl mx-auto" dir="ltr">
       <div className="flex flex-row justify-between items-start md:items-center gap-4 mb-8">
@@ -70,9 +113,8 @@ export function Stepper({ steps, currentStep }: StepperProps) {
           <React.Fragment key={step.title}>
             <Step
               title={step.title}
-              description={step.description}
-              isCompleted={index < currentStep}
-              isActive={index === currentStep}
+              isCompleted={!!step.isCompleted}
+              isActive={step.step === currentStep}
             />
             {index < steps.length - 1 && (
               <ChevronRight className="hidden md:block text-muted-foreground" />

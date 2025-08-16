@@ -1,69 +1,65 @@
+"use client";
+
 import { Button } from "@/components/ui/button"; // فرض بر اینکه Input از ui دارید، اگر نه باید از shadcn/ui یا هر کتابخانه‌ای بگیرید
 import { Printer, Car, User, Scale, ChevronLeft, Upload } from "lucide-react";
-import usePlaque from "@/hooks/usePlaque";
-import { closeModal as closeModalAction } from "@/store/core/modals";
-import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { ModalStep } from "@/store/core/modals";
 import type { ExprotTypes, UploadTypes } from "@/store/slices/Action";
 import { useState } from "react";
-import {
-  Activity_add,
-  Activity_update,
-  ActivityType,
-} from "@/store/slices/Activity";
+import { useModals } from "@/hooks/useModal";
 
-interface SectionProps {
-  goNext: () => void;
-  goBack: () => void;
-}
-
-export default function Confirm({ goNext, goBack }: SectionProps) {
-  const { selectedCar } = usePlaque();
-  const modal = useAppSelector((state) => state.modals.modals.mainModal);
-  const exports = modal?.actionType?.exports || [];
-  const uploads: UploadTypes[] = modal?.actionType?.uploads || []; // اضافه کردن آپلودها
-  const dispatch = useAppDispatch();
+export default function Confirm() {
+  const {
+    actionType,
+    goNext,
+    goPervious,
+    selectedCar,
+    empltyWeghting,
+    fullWeghting,
+    selectedWork,
+  } = useModals();
+  const exports = actionType?.exports || [];
+  const uploads: UploadTypes[] = actionType?.uploads || []; // اضافه کردن آپلودها
 
   const [address, setAddress] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<
     Record<number, File | null>
   >({});
-  const [error, setError] = useState<string | null>(null);
 
   const closeModal = () => {
-    const data = { ...modal?.activity, address } as unknown as ActivityType;
-    dispatch(Activity_add(data));
+    // const data = { ...modal?.activity, address } as unknown as ActivityType;
+    // dispatch(Activity_add(data));
 
-    const missingRequired = uploads.filter(
-      (u) => u.required && !uploadedFiles[u.id]
-    );
+    // const missingRequired = uploads.filter(
+    //   (u) => u.required && !uploadedFiles[u.id]
+    // );
 
-    if (missingRequired.length > 0) {
-      setError("لطفاً تمام مدارک اجباری را بارگذاری کنید.");
-      return;
-    }
+    // if (missingRequired.length > 0) {
+    //   setError("لطفاً تمام مدارک اجباری را بارگذاری کنید.");
+    //   return;
+    // }
 
-    setError(null);
+    goNext(ModalStep.CONFIRM);
+  };
 
-    dispatch(closeModalAction("mainModal"));
+  const goBack = () => {
+    goPervious(ModalStep.CONFIRM);
   };
 
   const net_weight =
-    modal?.activity?.Full && modal?.activity?.Empty
-      ? modal?.activity?.Full - modal?.activity?.Empty
-      : -1;
+    fullWeghting && empltyWeghting ? fullWeghting - empltyWeghting : -1;
 
   const printReplaces = {
-    id: modal?.activity?.pk,
-    full: modal?.activity?.Full || "وزن نشده",
-    empty: modal?.activity?.Empty || "وزن نشده",
+    // id: modal?.activity?.pk,
+    full: fullWeghting || "وزن نشده",
+    empty: empltyWeghting || "وزن نشده",
     car_plaque: selectedCar?.license_plate,
     car_type: selectedCar?.type__name,
     driver_name: selectedCar?.driver.name,
-    baskol_number_empty: modal?.activity?.baskol_number_empty,
-    empty_date: modal?.activity?.baskol_number_empty || "ثبت نشده",
-    full_date: modal?.activity?.baskol_number_full || "ثبت نشده",
+    // baskol_number_empty: modal?.activity?.baskol_number_empty,
+    // empty_date: modal?.activity?.baskol_number_empty || "ثبت نشده",
+    // full_date: modal?.activity?.baskol_number_full || "ثبت نشده",
     net_weight: net_weight > 0 ? net_weight : "ناتمام",
-    work_name: modal?.activity?.work_type.name,
+    work_name: selectedWork?.name,
     address: address,
   };
 
@@ -160,12 +156,12 @@ export default function Confirm({ goNext, goBack }: SectionProps) {
                 <div className="bg-white p-3 rounded-md">
                   <p className="text-sm text-gray-500">وزن خالی</p>
                   <p className="font-medium text-lg">
-                    {selectedCar.last_empty_weight} کیلوگرم
+                    {empltyWeghting} کیلوگرم
                   </p>
                 </div>
                 <div className="bg-white p-3 rounded-md">
                   <p className="text-sm text-gray-500">وزن پر</p>
-                  <p className="font-medium text-lg">-</p>
+                  <p className="font-medium text-lg">{fullWeghting} کیلوگرم</p>
                 </div>
               </div>
             </div>
@@ -225,7 +221,6 @@ export default function Confirm({ goNext, goBack }: SectionProps) {
             </div>
           )}
         </div>
-        {error && <p className="text-sm text-red-600 font-medium">{error}</p>}
 
         {/* Actions */}
         <div className="flex justify-between gap-4 p-6 border-t border-gray-100">

@@ -1,189 +1,90 @@
-import { Modal } from "@/components/ui/modal";
-import { useEffect, useState } from "react";
 import { FileText } from "lucide-react";
 import { Stepper } from "@/components/ui/stepper";
 import PlaqueSection from "./plaque";
 import WeightSection from "./weight";
-import Confirm from "./confirm";
-import { useAppSelector } from "@/store/hooks";
-import { useActivity } from "@/hooks/useActivity";
-import { midFetcher } from "@/lib/axios";
+import ConfirmSection from "./confirm";
+import { useModals } from "@/hooks/useModal";
+import { ModalStep } from "@/store/core/modals";
+
+type ConvertorType = {
+  [key: number]: {
+    component: any;
+    params?: { [key: string]: any };
+  };
+};
 
 export default function MainModal() {
-  const [currentStep, setCurrentStep] = useState(0);
-  const [baskolData, setBaskolData] = useState<
-    | {
-        plaque_number: string;
-        baskol_number: 1 | 2 | 3;
-        baskol_value: number;
-        image_link: string;
-      }
-    | undefined
-  >();
-
-  const modal = useAppSelector((state) => state.modals.modals.mainModal);
-  const { createWithPlaque, Activity_data } = useActivity("silent");
-
-  useEffect(() => {
-    const fetchData = async () => {
-      const response = await midFetcher.get("");
-      setBaskolData(response.data);
-    };
-
-    fetchData();
-  }, [modal, currentStep]);
-
-  useEffect(() => {
-    if (!modal) {
-      return;
-    }
-
-    // if not have plaque, go to plaque step
-    if (!modal.activity) {
-      setCurrentStep(0);
-      return;
-    }
-
-    // if have plaque, go to weight step
-    if (modal?.actionType?.type === "empty") {
-      if (modal.activity.Empty === null) {
-        setCurrentStep(1);
-        return;
-      }
-      if (modal.activity.Full === null) {
-        setCurrentStep(2);
-        return;
-      }
-    } else {
-      if (modal.activity.Full === null) {
-        setCurrentStep(1);
-        return;
-      }
-      if (modal.activity.Empty === null) {
-        setCurrentStep(2);
-        return;
-      }
-    }
-  }, [modal]);
-
-  if (!modal?.isOpen || !modal?.actionType) return null;
-
-  const steps = [
-    {
-      title: "جستجوی پلاک",
-      section: (
-        <PlaqueSection
-          baskolData={baskolData}
-          goNext={(car, selectedWork) => {
-            createWithPlaque({
-              Car: car,
-              Action: modal.actionType as any,
-              work: selectedWork,
-              ...(baskolData &&
-                (modal?.actionType?.type === "empty"
-                  ? {
-                      baskol_number_empty: baskolData?.baskol_number,
-                    }
-                  : {
-                      baskol_number_empty: baskolData?.baskol_number,
-                    })),
-            });
-            setCurrentStep(currentStep + 1);
-          }}
-        />
-      ),
+  const Step2Component: ConvertorType = {
+    [ModalStep.PLAQUE]: { component: PlaqueSection },
+    [ModalStep.WEIGHTING_FULL]: {
+      component: WeightSection,
+      params: { isEmptyWeightCalc: false },
     },
-    ...(modal?.actionType?.type === "empty"
-      ? [
-          {
-            title: "وزن خالی",
-            section: (
-              <WeightSection
-                baskolData={baskolData}
-                goNext={() => setCurrentStep(currentStep + 1)}
-                goBack={() => setCurrentStep(currentStep - 1)}
-                isEmptyWeightCalc={true}
-              />
-            ),
-          },
-          {
-            title: "وزن پر",
-            section: (
-              <WeightSection
-                baskolData={baskolData}
-                goNext={() => setCurrentStep(currentStep + 1)}
-                goBack={() => setCurrentStep(currentStep - 1)}
-                isEmptyWeightCalc={false}
-              />
-            ),
-          },
-        ]
-      : [
-          {
-            title: "وزن پر",
-            section: (
-              <WeightSection
-                baskolData={baskolData}
-                goNext={() => setCurrentStep(currentStep + 1)}
-                goBack={() => setCurrentStep(currentStep - 1)}
-                isEmptyWeightCalc={false}
-              />
-            ),
-          },
-          {
-            title: "وزن خالی",
-            section: (
-              <WeightSection
-                baskolData={baskolData}
-                goNext={() => setCurrentStep(currentStep + 1)}
-                goBack={() => setCurrentStep(currentStep - 1)}
-                isEmptyWeightCalc={true}
-              />
-            ),
-          },
-        ]),
-    {
-      title: "تایید",
-      section: (
-        <Confirm
-          goNext={() => {}}
-          goBack={() => setCurrentStep(currentStep - 1)}
-        />
-      ),
+    [ModalStep.WEIGHTING_EMPTY]: {
+      component: WeightSection,
+      params: { isEmptyWeightCalc: true },
     },
-  ];
+
+    [ModalStep.CONFIRM]: {
+      component: ConfirmSection,
+    },
+  };
+
+  const { isOpen, step, closeModal } = useModals();
+
+  if (!isOpen || step === undefined) return null;
+
+  const Section = Step2Component[step].component;
+  const params = Step2Component[step].params || {};
 
   return (
-    <Modal __name__="mainModal">
-      <div className="w-screen max-w-5xl mx-auto bg-gray-50 h-full" dir="rtl">
-        {/* Header */}
-        <div className="bg-white border-b border-gray-200 px-6 py-4 gap-5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                <FileText className="w-6 h-6 text-white" />
+    <div
+      id="modal"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+    >
+      <div className="fixed inset-0 bg-black/50" onClick={closeModal}></div>
+      <div className="relative  bg-base-100 rounded-lg shadow-xl max-w-full max-h-full overflow-auto">
+        <button
+          onClick={closeModal}
+          className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
+        >
+          ✕
+        </button>
+        <div className="p-4">
+          <div
+            className="w-screen max-w-5xl mx-auto bg-gray-50 h-full"
+            dir="rtl"
+          >
+            {/* Header */}
+            <div className="bg-white border-b border-gray-200 px-6 py-4 gap-5">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
+                    <FileText className="w-6 h-6 text-white" />
+                  </div>
+                  <div>
+                    <h1 className="text-xl font-bold text-gray-900">
+                      سامانه جستجوی پلاک
+                    </h1>
+                    <p className="text-sm text-gray-500">
+                      سازمان حمل و نقل شهرداری
+                    </p>
+                  </div>
+                </div>
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">
-                  سامانه جستجوی پلاک
-                </h1>
-                <p className="text-sm text-gray-500">
-                  سازمان حمل و نقل شهرداری
-                </p>
+              {/* Step Indicator */}
+              <div className="mt-5">
+                <Stepper />
               </div>
             </div>
-          </div>
-          {/* Step Indicator */}
-          <div className="mt-5">
-            <Stepper steps={steps} currentStep={currentStep} />
-          </div>
-        </div>
 
-        {/* Content */}
-        <div className="bg-white px-6 py-4 gap-5">
-          {steps[currentStep].section}
+            {/* Content */}
+            <div className="bg-white px-6 py-4 gap-5">
+              <Section {...params} />
+            </div>
+          </div>
         </div>
       </div>
-    </Modal>
+    </div>
   );
 }
