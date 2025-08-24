@@ -67,7 +67,7 @@ export default function MainModal() {
                       سامانه جستجوی پلاک
                     </h1>
                     <p className="text-sm text-gray-500">
-                      سازمان حمل و نقل شهرداری
+                      سازمان عمران و بازآفرینی فضا های شهری
                     </p>
                   </div>
                 </div>

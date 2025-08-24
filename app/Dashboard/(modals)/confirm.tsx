@@ -60,7 +60,7 @@ export default function Confirm() {
     // full_date: modal?.activity?.baskol_number_full || "ثبت نشده",
     net_weight: net_weight > 0 ? net_weight : "ناتمام",
     work_name: selectedWork?.name,
-    address: address,
+    address: address || "ثبت نشده",
   };
 
   const handlePrint = async (exportType: ExprotTypes) => {

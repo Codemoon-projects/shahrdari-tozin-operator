@@ -16,6 +16,7 @@ import type { CarType } from "@/store/slices/Car";
 import Image from "next/image";
 import { useModals } from "@/hooks/useModal";
 import { ModalStep } from "@/store/core/modals";
+import { useMid } from "@/hooks/useMid";
 
 export interface ActionWorkType {
   id: number;
@@ -101,22 +102,15 @@ function PlaqueOTPInput({
   );
 }
 
-interface ModalProps {
-  baskolData?: {
-    plaque_number: string;
-    baskol_number: 1 | 2 | 3;
-    baskol_value: number;
-    image_link: string;
-  };
-}
 
-export default function Plaque({ baskolData }: ModalProps) {
+export default function Plaque() {
   const { cars } = usePlaque();
   const [selectedPlaque, setSelectedPlaque] = useState("");
   const [filteredData, setFilteredData] = useState<CarType[]>([]);
   const [showDropdown, setShowDropdown] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isWorkSelectionOpen, setIsWorkSelectionOpen] = useState(false);
+  const {baskolData} = useMid()
 
   const { goNext, actionType, updateCurrentData, selectedActivity } =
     useModals();
