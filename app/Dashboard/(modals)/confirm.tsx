@@ -49,7 +49,7 @@ export default function Confirm() {
     fullWeghting && empltyWeghting ? fullWeghting - empltyWeghting : -1;
 
   const printReplaces = {
-    // id: modal?.activity?.pk,
+    id: modal?.activity?.pk,
     full: fullWeghting || "وزن نشده",
     empty: empltyWeghting || "وزن نشده",
     car_plaque: selectedCar?.license_plate,
