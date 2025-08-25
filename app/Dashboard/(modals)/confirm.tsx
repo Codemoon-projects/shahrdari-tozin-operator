@@ -56,8 +56,8 @@ export default function Confirm() {
     car_type: selectedCar?.type__name,
     driver_name: selectedCar?.driver.name,
     // baskol_number_empty: modal?.activity?.baskol_number_empty,
-    // empty_date: modal?.activity?.baskol_number_empty || "ثبت نشده",
-    // full_date: modal?.activity?.baskol_number_full || "ثبت نشده",
+    empty_date: new Date().toLocaleString("fa"),
+    full_date: new Date().toLocaleString("fa"),
     net_weight: net_weight > 0 ? net_weight : "ناتمام",
     work_name: selectedWork?.name,
     address: address || "ثبت نشده",
@@ -72,11 +72,32 @@ export default function Confirm() {
       return print.replaceAll(`{{${k}}}`, v as string);
     }, exportType.shema);
 
-    printWindow.document.write(
-      `<html dir="rtl"><body>${finalPrint}</body></html>`
-    );
-    printWindow.print();
-    printWindow.close();
+  printWindow.document.write(`
+    <html dir="rtl">
+      <head>
+        <style>
+          @font-face {
+            font-family: 'BYekan';
+            src: url('/fonts/Yekan.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+          }
+          body {
+            font-family: 'BYekan', sans-serif;
+          }
+        </style>
+      </head>
+      <body>
+        ${finalPrint}
+      </body>
+    </html>
+  `);
+
+  printWindow.document.close();
+  printWindow.focus();
+  printWindow.print();
+  printWindow.close();
+
   };
 
   const handleFileChange = (id: number, file: File | null) => {
