@@ -122,7 +122,6 @@ export const useModals = () => {
     // work_type_id: selectedWork?.id || -1,
     // Action: actionType as any,
     const act_action = activity.Action;
-    console.log([!!activity.Full, !!activity.Empty, act_action.type]);
 
     if (!activity.Car) {
       openPlaque({ actionType: act_action, activity });
@@ -167,14 +166,10 @@ export const useModals = () => {
       [key]: value,
     };
 
-    console.log(newData);
-
     dispatch(openModal(newData));
   };
 
   const goNext = (current: ModalStep) => {
-    console.log(actionType);
-
     if (!actionType) return;
     switch (current) {
       case ModalStep.PLAQUE:
@@ -205,29 +200,20 @@ export const useModals = () => {
   };
   const goPervious = (current: ModalStep) => {
     if (!actionType) return;
+    console.log("current", current);
+    console.log("actioanType", actionType);
+
     switch (current) {
-      case ModalStep.PLAQUE:
+      case 0:
         return;
-      case ModalStep.WEIGHTING_EMPTY:
-        if (actionType?.type === "empty") {
-          openWeightingFull({ actionType, ...modalData });
-        } else {
-          openPlaque({ actionType, ...modalData });
-        }
+      case 2:
+        openPlaque({ actionType, ...modalData });
         return;
-      case ModalStep.WEIGHTING_FULL:
-        if (actionType?.type === "empty") {
-          openPlaque({ actionType, ...modalData });
-        } else {
-          openWeightingEmpty({ actionType, ...modalData });
-        }
+      case 1:
+        openWeightingEmpty({ actionType, ...modalData });
         return;
-      case ModalStep.CONFIRM:
-        if (actionType?.type === "empty") {
-          openWeightingEmpty({ actionType, ...modalData });
-        } else {
-          openWeightingFull({ actionType, ...modalData });
-        }
+      case 3:
+        openWeightingFull({ actionType, ...modalData });
         return;
     }
   };

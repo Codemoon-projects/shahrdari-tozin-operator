@@ -24,19 +24,20 @@ export default function Confirm() {
   const [uploadedFiles, setUploadedFiles] = useState<
     Record<number, File | null>
   >({});
+  const [error, setError] = useState("");
 
   const closeModal = () => {
     // const data = { ...modal?.activity, address } as unknown as ActivityType;
     // dispatch(Activity_add(data));
 
-    // const missingRequired = uploads.filter(
-    //   (u) => u.required && !uploadedFiles[u.id]
-    // );
+    const missingRequired = uploads.filter(
+      (u) => u.required && !uploadedFiles[u.id]
+    );
 
-    // if (missingRequired.length > 0) {
-    //   setError("لطفاً تمام مدارک اجباری را بارگذاری کنید.");
-    //   return;
-    // }
+    if (missingRequired.length > 0) {
+      setError("لطفاً تمام مدارک اجباری را بارگذاری کنید.");
+      return;
+    }
 
     goNext(ModalStep.CONFIRM);
   };
@@ -49,7 +50,7 @@ export default function Confirm() {
     fullWeghting && empltyWeghting ? fullWeghting - empltyWeghting : -1;
 
   const printReplaces = {
-    id: modal?.activity?.pk,
+    id: 0,
     full: fullWeghting || "وزن نشده",
     empty: empltyWeghting || "وزن نشده",
     car_plaque: selectedCar?.license_plate,
@@ -72,7 +73,7 @@ export default function Confirm() {
       return print.replaceAll(`{{${k}}}`, v as string);
     }, exportType.shema);
 
-  printWindow.document.write(`
+    printWindow.document.write(`
     <html dir="rtl">
       <head>
         <style>
@@ -93,11 +94,10 @@ export default function Confirm() {
     </html>
   `);
 
-  printWindow.document.close();
-  printWindow.focus();
-  printWindow.print();
-  printWindow.close();
-
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
   };
 
   const handleFileChange = (id: number, file: File | null) => {
@@ -241,6 +241,7 @@ export default function Confirm() {
               </div>
             </div>
           )}
+          <p className="text-red-500">{error}</p>
         </div>
 
         {/* Actions */}

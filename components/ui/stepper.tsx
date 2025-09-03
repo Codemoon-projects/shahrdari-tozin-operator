@@ -68,10 +68,12 @@ export function Stepper() {
     actionType,
   } = useModals();
 
+  console.log("current in if", currentStep);
+
   const steps = [
     {
       title: "پلاک",
-      isCompleted: !!selectedCar,
+      isCompleted: currentStep === 1 || currentStep === 2 || currentStep === 3,
       step: ModalStep.PLAQUE,
     },
     ...(actionType?.type === "empty"
@@ -79,30 +81,30 @@ export function Stepper() {
           {
             step: ModalStep.WEIGHTING_EMPTY,
             title: "وزن خالی",
-            isCompleted: empltyWeghting,
+            isCompleted: currentStep === 1 || currentStep === 3,
           },
           {
             title: "وزن پر",
-            isCompleted: fullWeghting,
+            isCompleted: currentStep === 3,
             step: ModalStep.WEIGHTING_FULL,
           },
         ]
       : [
           {
             title: "وزن پر",
-            isCompleted: fullWeghting,
+            isCompleted: currentStep === 3 || currentStep === 2,
             step: ModalStep.WEIGHTING_FULL,
           },
           {
             step: ModalStep.WEIGHTING_EMPTY,
             title: "وزن خالی",
-            isCompleted: empltyWeghting,
+            isCompleted: currentStep === 3,
           },
         ]),
     {
       step: ModalStep.CONFIRM,
       title: "تایید",
-      isCompleted: currentStep === ModalStep.CONFIRM,
+      isCompleted: false,
     },
   ];
 
@@ -113,7 +115,7 @@ export function Stepper() {
           <React.Fragment key={step.title}>
             <Step
               title={step.title}
-              isCompleted={!!step.isCompleted}
+              isCompleted={step.isCompleted}
               isActive={step.step === currentStep}
             />
             {index < steps.length - 1 && (

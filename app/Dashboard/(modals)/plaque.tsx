@@ -17,6 +17,7 @@ import Image from "next/image";
 import { useModals } from "@/hooks/useModal";
 import { ModalStep } from "@/store/core/modals";
 import { useMid } from "@/hooks/useMid";
+import { distance as levenshtein } from "fastest-levenshtein";
 
 export interface ActionWorkType {
   id: number;
@@ -102,7 +103,6 @@ function PlaqueOTPInput({
   );
 }
 
-
 export default function Plaque() {
   const { cars } = usePlaque();
   const [selectedPlaque, setSelectedPlaque] = useState("");
@@ -110,7 +110,7 @@ export default function Plaque() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isWorkSelectionOpen, setIsWorkSelectionOpen] = useState(false);
-  const {baskolData} = useMid()
+  const { baskolData } = useMid();
 
   const { goNext, actionType, updateCurrentData, selectedActivity } =
     useModals();
@@ -121,13 +121,38 @@ export default function Plaque() {
     undefined
   );
 
-  const filterPlaques = (searchTerm: string) => {
-    if (!searchTerm) return;
-    const filterCars = cars.filter((car) =>
-      car.license_plate.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredData(filterCars);
+  const normalizePlate = (plate: string) => {
+    return plate
+      .replace(/\s+/g, "")
+      .replace(/-/g, "")
+      .replace(/ي/g, "ی")
+      .replace(/ك/g, "ک")
+      .toUpperCase();
   };
+
+  const filterPlaques = (searchTerm: string) => {
+    if (!searchTerm) {
+      setFilteredData(cars);
+      return;
+    }
+
+    const normalizedSearch = normalizePlate(searchTerm);
+
+    const filteredCars = cars.filter((car) => {
+      const normalizedPlate = normalizePlate(car.license_plate);
+
+      if (normalizedSearch.length > normalizedPlate.length) return false;
+
+      for (let i = 0; i < normalizedSearch.length; i++) {
+        if (normalizedPlate[i] !== normalizedSearch[i]) return false;
+      }
+
+      return true;
+    });
+
+    setFilteredData(filteredCars);
+  };
+
   useEffect(() => {
     selectedCarHandler(selectedActivity?.Car);
     setFilteredData(cars);
@@ -193,7 +218,9 @@ export default function Plaque() {
                     <div>
                       <p className="text-lg font-bold text-gray-900">
                         ایران{selectedCar.license_plate_code}-
-                        {selectedCar.license_plate}
+                        {`${selectedCar.license_plate.slice(3, 6)} 
+                                   ${selectedCar.license_plate.slice(2, 3)} 
+                                   ${selectedCar.license_plate.slice(0, 2)}`}
                       </p>
                       {selectedCar.driver && selectedCar.driver.name && (
                         <p className="text-sm text-gray-600">
@@ -346,7 +373,9 @@ export default function Plaque() {
                                   {item.license_plate_code}
                                 </span>
                                 <span className="font-medium text-gray-900">
-                                  -{item.license_plate}
+                                  {`-${item.license_plate.slice(3, 6)} 
+                                   ${item.license_plate.slice(2, 3)} 
+                                   ${item.license_plate.slice(0, 2)}`}
                                 </span>
                               </div>
                               <span className="text-xs text-gray-500">
@@ -376,31 +405,52 @@ export default function Plaque() {
 
       {/* Work Selection Dialog */}
       <Dialog open={isWorkSelectionOpen} onOpenChange={setIsWorkSelectionOpen}>
-        <DialogContent className="max-w-md bg-white">
-          <DialogHeader>
-            <DialogTitle className="text-right">انتخاب نوع کار</DialogTitle>
+        <DialogContent className="max-w-md bg-white rounded-2xl shadow-xl p-0">
+          <DialogHeader className="border-b px-6 py-4">
+            <DialogTitle className="text-right pr-4 text-lg font-bold text-gray-800">
+              انتخاب نوع کار
+            </DialogTitle>
           </DialogHeader>
-          <div className="space-y-3 max-h-96 overflow-y-auto">
+
+          <div className="space-y-2 max-h-96 overflow-y-auto p-4">
             {works.length > 0 ? (
               works.map((work: ActionWorkType) => (
                 <Button
                   key={work.id}
                   variant="outline"
-                  className="w-full justify-start text-right h-auto py-3 px-4 hover:bg-blue-50 hover:border-blue-200 bg-transparent"
+                  className="w-full justify-between text-right h-auto py-3 px-4 
+                       rounded-xl border-gray-200 
+                       hover:bg-blue-50 hover:border-blue-300 
+                       transition-all duration-200"
                   onClick={() => handleWorkSelection(work)}
                 >
-                  <span className="font-medium">{work.name}</span>
+                  <span className="font-medium text-gray-700">{work.name}</span>
                 </Button>
               ))
             ) : (
-              <div className="text-center py-8 text-gray-500">
+              <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+                <svg
+                  className="w-10 h-10 mb-3"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
                 <p>هیچ نوع کاری موجود نیست</p>
               </div>
             )}
           </div>
-          <div className="flex justify-end gap-2 pt-4 border-t">
+
+          <div className="flex justify-end gap-2 px-6 py-4 border-t">
             <Button
               variant="outline"
+              className="rounded-xl hover:bg-gray-100 transition"
               onClick={() => setIsWorkSelectionOpen(false)}
             >
               انصراف
