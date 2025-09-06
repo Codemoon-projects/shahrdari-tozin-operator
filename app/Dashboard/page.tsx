@@ -13,6 +13,7 @@ import { useCar } from "@/hooks/useCar";
 import { useModals } from "@/hooks/useModal";
 import ReportModal from "@/components/Car/ReportModal";
 import usePlaque from "@/hooks/usePlaque";
+import { ModalStep } from "@/store/core/modals";
 
 export default function () {
   const { Action_list, get_Action_list_list_712daa } = useAction();
@@ -23,7 +24,7 @@ export default function () {
     sendDataServer: sendActivityData,
   } = useActivity();
   const { sendReport } = useCar("silent");
-  const { openPlaque, isOpen } = useModals();
+  const { openModal, isOpen } = useModals();
   const [messageModalOpen, setMessageModalOpen] = useState<
     null | "violation" | "vehicle"
   >(null);
@@ -40,7 +41,7 @@ export default function () {
   const [success, setSuccess] = useState(false);
 
   const openPlaqueFromButton = (actionType: ActionType) => {
-    openPlaque({ actionType });
+    openModal({ actionType, step: ModalStep.PLAQUE });
   };
 
   const handleStatusChange = (status: boolean) => {

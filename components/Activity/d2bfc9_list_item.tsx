@@ -12,8 +12,11 @@ export default function Activity_d2bfc9_list_item({ data }: ActivityProps) {
   const { Car, Empty, Full, pk: id, Action } = data;
   const { openFromActivity } = useModals();
 
-  const onClickComponent = (activity: ActivityType) => {
-    openFromActivity(activity);
+  
+  
+  const onClickComponent = () => {
+    console.log(data);
+    openFromActivity(data);
   };
 
   // Log specific action data for debugging
@@ -101,7 +104,7 @@ export default function Activity_d2bfc9_list_item({ data }: ActivityProps) {
       {/* Actions Column */}
       <TableCell className="px-4 py-3 text-sm text-right">
         <button
-          onClick={() => onClickComponent(data)}
+          onClick={() => onClickComponent()}
           className="px-3 py-1 text-xs font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
         >
           {operationState.status === "completed"

@@ -42,7 +42,7 @@ export default function MainModal() {
       id="modal"
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
     >
-      <div className="fixed inset-0 bg-black/50" onClick={closeModal}></div>
+      <button className="fixed inset-0 bg-black/50" onClick={closeModal} />
       <div className="relative  bg-base-100 rounded-lg shadow-xl max-w-full max-h-full overflow-auto">
         <button
           onClick={closeModal}

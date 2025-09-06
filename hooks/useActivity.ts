@@ -84,7 +84,7 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
       weighing_type_id: a.Action.pk,
       Full: a.Full,
       Empty: a.Empty,
-      work_type_id: a.work_type_id,
+      work_type_id: a.work_type.id,
     }));
 
     console.log("data", data);

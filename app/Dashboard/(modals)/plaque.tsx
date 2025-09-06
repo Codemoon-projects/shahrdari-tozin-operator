@@ -17,7 +17,6 @@ import Image from "next/image";
 import { useModals } from "@/hooks/useModal";
 import { ModalStep } from "@/store/core/modals";
 import { useMid } from "@/hooks/useMid";
-import { distance as levenshtein } from "fastest-levenshtein";
 
 export interface ActionWorkType {
   id: number;
@@ -181,7 +180,7 @@ export default function Plaque() {
     );
     if (car) {
       selectedCarHandler(car);
-      updateCurrentData("car", car);
+      updateCurrentData({ car });
     }
   };
 
@@ -196,7 +195,8 @@ export default function Plaque() {
   const handleWorkSelection = (work: ActionWorkType) => {
     setIsWorkSelectionOpen(false);
 
-    updateCurrentData("selectedWork", work);
+    updateCurrentData({ selectedWork: work });
+
     goNext(ModalStep.PLAQUE);
   };
 

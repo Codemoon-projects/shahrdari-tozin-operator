@@ -2,10 +2,11 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import usePlaque from "./usePlaque";
 import {
   ModalStep,
-  openModal,
+  openModal as openModalDispatch,
   closeModal as closeModalRedux,
+  ModalDataProps,
 } from "@/store/core/modals";
-import { ActionType } from "@/store/slices/Action";
+import { ActionType, ActionWorkType } from "@/store/slices/Action";
 import { ActivityType } from "@/store/slices/Activity";
 import { CarType } from "@/store/slices/Car";
 import { useActivity } from "./useActivity";
@@ -51,146 +52,78 @@ export const useModals = () => {
     dispatch(closeModalRedux());
   };
 
-  const openPlaque = (props: {
-    actionType: ActionType;
-    activity?: ActivityType;
-    car?: CarType;
-  }) => {
-    dispatch(
-      openModal({
-        step: ModalStep.PLAQUE,
-        actionType: props.actionType,
-        activity: props.activity,
-        car: props.car,
-      })
-    );
+  const openModal = (props: ModalDataProps) => {
+    dispatch(openModalDispatch(props));
   };
-  const openWeightingFull = (props: {
-    actionType: ActionType;
-    activity?: ActivityType;
-    car?: CarType;
-  }) => {
-    dispatch(
-      openModal({
-        step: ModalStep.WEIGHTING_FULL,
-        actionType: props.actionType,
-        activity: props.activity,
-        car: props.car,
-      })
-    );
-  };
-  const openWeightingEmpty = (props: {
-    actionType: ActionType;
-    activity?: ActivityType;
-    car?: CarType;
-  }) => {
-    dispatch(
-      openModal({
-        step: ModalStep.WEIGHTING_EMPTY,
-        actionType: props.actionType,
-        activity: props.activity,
-        car: props.car,
-      })
-    );
-  };
-  const openConfirm = (props: {
-    actionType: ActionType;
-    activity?: ActivityType;
-    car?: CarType;
-  }) => {
-    dispatch(
-      openModal({
-        step: ModalStep.CONFIRM,
-        actionType: props.actionType,
-        activity: props.activity,
-        car: props.car,
-      })
-    );
+
+  const updateCurrentData = (props: Partial<ModalDataProps>) => {
+    if (step === undefined || !actionType) return;
+
+    openModal({ ...modalData, step, actionType, ...props });
   };
 
   const openFromActivity = (activity: ActivityType) => {
-    // pk: -1,
-    // ...selectedActivity,
-    // address: modalData?.address,
-    // baskol_number_empty: -1,
-    // baskol_number_full: -1,
-    // Car: selectedCar,
-    // Empty: empltyWeghting || 0,
-    // Full: fullWeghting || 0,
-    // server_accepted: false,
-    // work_type: selectedWork as any,
-    // work_type_id: selectedWork?.id || -1,
-    // Action: actionType as any,
     const act_action = activity.Action;
 
-    if (!activity.Car) {
-      openPlaque({ actionType: act_action, activity });
-      return;
-    }
-    switch ([!!activity.Full, !!activity.Empty, act_action.type].join("|")) {
-      case "true|true|empty":
-      case "true|true|full":
-        openConfirm({ actionType: act_action, activity, car: activity.Car });
-        return;
-
-      case "false|true|full":
-      case "false|true|empty":
-      case "false|false|full":
-        openWeightingFull({
-          actionType: act_action,
-          activity,
-          car: activity.Car,
-        });
-        return;
-
-      case "true|false|full":
-      case "true|false|empty":
-      case "false|false|empty":
-        openWeightingEmpty({
-          actionType: act_action,
-          activity,
-          car: activity.Car,
-        });
-        return;
-    }
-  };
-
-  const updateCurrentData = (
-    key: "fullWeghting" | "empltyWeghting" | "selectedWork" | "car",
-    value: any
-  ) => {
-    if (step === undefined) return;
-
-    const newData = {
-      ...(modalData as any),
-      [key]: value,
+    let perviousData: ModalDataProps = {
+      step: ModalStep.PLAQUE,
+      actionType: act_action,
+      activity,
     };
 
-    dispatch(openModal(newData));
+    if (!activity.Car || !activity.work_type === undefined) {
+      openModal(perviousData);
+      return;
+    }
+
+    perviousData.car = activity.Car;
+    perviousData.selectedWork = activity.work_type;
+
+    perviousData.fullWeghting = activity.Full || undefined;
+    perviousData.empltyWeghting = activity.Empty || undefined;
+
+    switch ([!!activity.Full, !!activity.Empty, act_action.type].join("|")) {
+      case "true|false|full":
+      case "false|false|empty":
+      case "false|true|empty":
+        perviousData.step = ModalStep.WEIGHTING_EMPTY;
+        openModal(perviousData);
+        return;
+      case "false|true|empty":
+      case "false|false|full":
+      case "false|true|full":
+        perviousData.step = ModalStep.WEIGHTING_FULL;
+        openModal(perviousData);
+        return;
+    }
+
+    perviousData.address = activity.address;
+    openModal(perviousData);
   };
 
   const goNext = (current: ModalStep) => {
-    if (!actionType) return;
+    if (step === undefined || !actionType) return;
+
     switch (current) {
       case ModalStep.PLAQUE:
         if (actionType?.type === "empty") {
-          openWeightingEmpty({ actionType, ...modalData });
+          updateCurrentData({ step: ModalStep.WEIGHTING_EMPTY });
         } else {
-          openWeightingFull({ actionType, ...modalData });
+          updateCurrentData({ step: ModalStep.WEIGHTING_FULL });
         }
         return;
       case ModalStep.WEIGHTING_EMPTY:
         if (actionType?.type === "empty") {
-          openWeightingFull({ actionType, ...modalData });
+          updateCurrentData({ step: ModalStep.WEIGHTING_FULL });
         } else {
-          openConfirm({ actionType, ...modalData });
+          updateCurrentData({ step: ModalStep.CONFIRM });
         }
         return;
       case ModalStep.WEIGHTING_FULL:
         if (actionType?.type === "empty") {
-          openConfirm({ actionType, ...modalData });
+          updateCurrentData({ step: ModalStep.CONFIRM });
         } else {
-          openWeightingEmpty({ actionType, ...modalData });
+          updateCurrentData({ step: ModalStep.WEIGHTING_EMPTY });
         }
         return;
       case ModalStep.CONFIRM:
@@ -198,31 +131,37 @@ export const useModals = () => {
         return;
     }
   };
-  const goPervious = (current: ModalStep) => {
-    if (!actionType) return;
-    console.log("current", current);
-    console.log("actioanType", actionType);
 
+  const goPervious = (current: ModalStep) => {
+    if (step === undefined || !actionType) return;
     switch (current) {
-      case 0:
+      case ModalStep.PLAQUE:
         return;
-      case 2:
-        openPlaque({ actionType, ...modalData });
+      case ModalStep.WEIGHTING_EMPTY:
+        if (actionType?.type === "empty") {
+          updateCurrentData({ step: ModalStep.PLAQUE });
+        } else {
+          updateCurrentData({ step: ModalStep.WEIGHTING_FULL });
+        }
         return;
-      case 1:
-        openWeightingEmpty({ actionType, ...modalData });
+      case ModalStep.WEIGHTING_FULL:
+        if (actionType?.type === "empty") {
+          updateCurrentData({ step: ModalStep.WEIGHTING_EMPTY });
+        } else {
+          updateCurrentData({ step: ModalStep.PLAQUE });
+        }
         return;
-      case 3:
-        openWeightingFull({ actionType, ...modalData });
+      case ModalStep.CONFIRM:
+        if (actionType?.type === "empty") {
+          updateCurrentData({ step: ModalStep.WEIGHTING_FULL });
+        } else {
+          updateCurrentData({ step: ModalStep.WEIGHTING_EMPTY });
+        }
         return;
     }
   };
 
   return {
-    openPlaque,
-    openWeightingFull,
-    openWeightingEmpty,
-    openConfirm,
     selectedCar,
     selectedActivity,
     step,
@@ -236,5 +175,6 @@ export const useModals = () => {
     empltyWeghting,
     selectedWork,
     openFromActivity,
+    openModal,
   };
 };

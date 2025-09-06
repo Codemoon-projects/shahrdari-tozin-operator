@@ -16,17 +16,19 @@ export enum ModalStep {
   CONFIRM,
 }
 
+export interface ModalDataProps {
+  step: ModalStep;
+  actionType: ActionType;
+  activity?: ActivityType;
+  car?: CarType;
+  selectedWork?: ActionWorkType;
+  fullWeghting?: number;
+  empltyWeghting?: number;
+  address?: string;
+}
+
 export type coreType = {
-  modals?: {
-    step: ModalStep;
-    actionType: ActionType;
-    activity?: ActivityType;
-    car?: CarType;
-    selectedWork?: ActionWorkType;
-    fullWeghting?: number;
-    empltyWeghting?: number;
-    address?: string;
-  };
+  modals?: ModalDataProps;
   message: appMessageType;
 };
 
@@ -53,19 +55,7 @@ const coreSlice = createSlice({
         desc: "",
       };
     },
-    openModal: (
-      state,
-      action: PayloadAction<{
-        step: ModalStep;
-        actionType: ActionType;
-        activity?: ActivityType;
-        car?: CarType;
-        selectedWork?: ActionWorkType;
-        fullWeghting?: number;
-        empltyWeghting?: number;
-        address?: string;
-      }>
-    ) => {
+    openModal: (state, action: PayloadAction<ModalDataProps>) => {
       console.log("payload", action.payload);
 
       state.modals = { ...state.modals, ...action.payload };
