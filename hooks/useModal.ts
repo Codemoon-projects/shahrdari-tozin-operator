@@ -2,6 +2,7 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import {
   ModalStep,
   openModal as openModalDispatch,
+  updateModal as updateModalDispatch,
   closeModal as closeModalRedux,
   ModalDataProps,
 } from "@/store/core/modals";
@@ -10,32 +11,23 @@ import { useActivity } from "./useActivity";
 
 export const useModals = () => {
   const modalData = useAppSelector((store) => store.modals.modals);
-  const selectedCar = useAppSelector((store) => store.modals.modals)?.car;
-  const actionType = useAppSelector((store) => store.modals.modals)?.actionType;
-  const fullWeghting = useAppSelector(
-    (store) => store.modals.modals
-  )?.fullWeghting;
-  const empltyWeghting = useAppSelector(
-    (store) => store.modals.modals
-  )?.empltyWeghting;
-  const selectedWork = useAppSelector(
-    (store) => store.modals.modals
-  )?.selectedWork;
-  const step = useAppSelector((store) => store.modals.modals)?.step;
-  const selectedActivity = useAppSelector(
-    (store) => store.modals.modals
-  )?.activity;
+  const selectedCar = modalData?.car;
+  const actionType = modalData?.actionType;
+  const fullWeghting = modalData?.fullWeghting;
+  const empltyWeghting = modalData?.empltyWeghting;
+  const selectedWork = modalData?.selectedWork;
+  const step = modalData?.step;
+  const selectedActivity = modalData?.activity;
+
   const dispatch = useAppDispatch();
   const { setActivity, Activity_data } = useActivity();
 
   const closeModal = () => {
     if (!selectedCar) return;
 
-    console.log(Activity_data.length + 1);
-
-    setActivity({
-      pk: Activity_data.length + 1,
+    const activityData = {
       ...selectedActivity,
+      pk: modalData?.id || Activity_data.length + 1,
       address: modalData?.address,
       baskol_number_empty: -1,
       baskol_number_full: -1,
@@ -46,7 +38,10 @@ export const useModals = () => {
       work_type: selectedWork as any,
       work_type_id: selectedWork?.id || -1,
       Action: actionType as any,
-    });
+    };
+
+    console.log("setActivityData", activityData);
+    setActivity(activityData);
 
     dispatch(closeModalRedux());
   };
@@ -59,14 +54,22 @@ export const useModals = () => {
     const id = modalData?.id || Activity_data.length + 1;
 
     if (step === undefined || !actionType) return;
-    console.log("update new props -> ", props);
-    const newData = { ...modalData, id, step, actionType, ...props };
+    const newData = {
+      ...modalData,
+      id,
+      step,
+      actionType,
+      ...props,
+    };
 
-    openModal(newData);
+    console.log("update new props -> ", props, newData);
+    dispatch(updateModalDispatch(newData));
   };
 
   const openFromActivity = (activity: ActivityType) => {
     const act_action = activity.Action;
+
+    console.log("->", activity);
 
     let perviousData: ModalDataProps = {
       id: activity.pk,
@@ -102,6 +105,7 @@ export const useModals = () => {
     }
 
     perviousData.address = activity.address;
+    perviousData.step = ModalStep.CONFIRM;
     openModal(perviousData);
   };
 

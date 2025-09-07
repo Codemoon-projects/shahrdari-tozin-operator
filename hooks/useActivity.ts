@@ -9,9 +9,6 @@ import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { fetcher } from "@/lib/axios";
 import { useEffect } from "react";
 import toast from "react-hot-toast";
-import { CarType } from "@/store/slices/Car";
-import { ActionType, ActionWorkType } from "@/store/slices/Action";
-import { openModal } from "@/store/core/modals";
 
 export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
   const { openConfirmModal } = useConfirm();
@@ -32,6 +29,7 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
 
       if (response.status >= 200 && response.status < 300) {
         const serverData = response.data.Weighing;
+
         // set response of server on state
         dispatch(
           Activity_set(

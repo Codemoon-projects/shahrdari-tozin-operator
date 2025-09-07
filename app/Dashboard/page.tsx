@@ -41,7 +41,11 @@ export default function () {
   const [success, setSuccess] = useState(false);
 
   const openPlaqueFromButton = (actionType: ActionType) => {
-    openModal({ actionType, step: ModalStep.PLAQUE });
+    openModal({
+      actionType,
+      step: ModalStep.PLAQUE,
+      id: Activity_data.length + 1,
+    });
   };
 
   const handleStatusChange = (status: boolean) => {

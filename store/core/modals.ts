@@ -60,6 +60,10 @@ const coreSlice = createSlice({
       state.modals = { ...state.modals, ...action.payload };
       console.log(state.modals);
     },
+    updateModal: (state, action: PayloadAction<Partial<ModalDataProps>>) => {
+      if (!state.modals) return;
+      state.modals = { ...state.modals, ...action.payload };
+    },
     closeModal: (state) => {
       state.modals = undefined;
     },
@@ -67,5 +71,10 @@ const coreSlice = createSlice({
 });
 
 export default coreSlice.reducer;
-export const { changeMessage, clearMessage, openModal, closeModal } =
-  coreSlice.actions;
+export const {
+  changeMessage,
+  clearMessage,
+  openModal,
+  closeModal,
+  updateModal,
+} = coreSlice.actions;
