@@ -9,6 +9,7 @@ import {
 import { ActivityType } from "@/store/slices/Activity";
 import { useActivity } from "./useActivity";
 import { useEffect } from "react";
+import { useAction } from "./useAction";
 
 export const useModals = () => {
   const modalData = useAppSelector((store) => store.modals.modals);
@@ -22,6 +23,7 @@ export const useModals = () => {
 
   const dispatch = useAppDispatch();
   const { setActivity, Activity_data } = useActivity();
+  const { Action_list } = useAction();
 
   const closeModal = () => {
     if (!selectedCar) return;
@@ -68,7 +70,8 @@ export const useModals = () => {
   };
 
   const openFromActivity = (activity: ActivityType) => {
-    const act_action = activity.Action;
+    const act_action = Action_list.find((a) => a.pk === activity.Action.pk);
+    if (!act_action) return;
 
     let perviousData: ModalDataProps = {
       id: activity.pk,
