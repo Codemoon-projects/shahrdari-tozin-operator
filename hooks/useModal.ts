@@ -8,6 +8,7 @@ import {
 } from "@/store/core/modals";
 import { ActivityType } from "@/store/slices/Activity";
 import { useActivity } from "./useActivity";
+import { useEffect } from "react";
 
 export const useModals = () => {
   const modalData = useAppSelector((store) => store.modals.modals);
@@ -62,14 +63,12 @@ export const useModals = () => {
       ...props,
     };
 
-    console.log("update new props -> ", props, newData);
+    console.log("update new props -> ", props);
     dispatch(updateModalDispatch(newData));
   };
 
   const openFromActivity = (activity: ActivityType) => {
     const act_action = activity.Action;
-
-    console.log("->", activity);
 
     let perviousData: ModalDataProps = {
       id: activity.pk,
@@ -109,29 +108,29 @@ export const useModals = () => {
     openModal(perviousData);
   };
 
-  const goNext = (current: ModalStep) => {
+  const goNext = (current: ModalStep, data: Partial<ModalDataProps> = {}) => {
     if (step === undefined || !actionType) return;
 
     switch (current) {
       case ModalStep.PLAQUE:
         if (actionType?.type === "empty") {
-          updateCurrentData({ step: ModalStep.WEIGHTING_EMPTY });
+          updateCurrentData({ step: ModalStep.WEIGHTING_EMPTY, ...data });
         } else {
-          updateCurrentData({ step: ModalStep.WEIGHTING_FULL });
+          updateCurrentData({ step: ModalStep.WEIGHTING_FULL, ...data });
         }
         return;
       case ModalStep.WEIGHTING_EMPTY:
         if (actionType?.type === "empty") {
-          updateCurrentData({ step: ModalStep.WEIGHTING_FULL });
+          updateCurrentData({ step: ModalStep.WEIGHTING_FULL, ...data });
         } else {
-          updateCurrentData({ step: ModalStep.CONFIRM });
+          updateCurrentData({ step: ModalStep.CONFIRM, ...data });
         }
         return;
       case ModalStep.WEIGHTING_FULL:
         if (actionType?.type === "empty") {
-          updateCurrentData({ step: ModalStep.CONFIRM });
+          updateCurrentData({ step: ModalStep.CONFIRM, ...data });
         } else {
-          updateCurrentData({ step: ModalStep.WEIGHTING_EMPTY });
+          updateCurrentData({ step: ModalStep.WEIGHTING_EMPTY, ...data });
         }
         return;
       case ModalStep.CONFIRM:

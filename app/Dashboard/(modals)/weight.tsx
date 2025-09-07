@@ -8,8 +8,7 @@ import { useMid } from "@/hooks/useMid";
 
 export default function WeightSection() {
   const [isCalculating, setIsCalculating] = useState(true);
-  const { goNext, goPervious, selectedCar, updateCurrentData, step } =
-    useModals();
+  const { goNext, goPervious, selectedCar, step } = useModals();
   const [calculatedWeight, setCalculatedWeight] = useState<number | null>(null);
   const { baskolData } = useMid();
 
@@ -45,11 +44,9 @@ export default function WeightSection() {
 
       const currentKey = isEmptyWeightCalc ? "empltyWeghting" : "fullWeghting";
 
-      updateCurrentData({
+      goNext(currentStep, {
         [currentKey]: value,
       });
-
-      goNext(currentStep);
     }
   };
 
