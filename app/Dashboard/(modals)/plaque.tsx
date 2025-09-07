@@ -120,37 +120,17 @@ export default function Plaque() {
     undefined
   );
 
-  const normalizePlate = (plate: string) => {
-    return plate
-      .replace(/\s+/g, "")
-      .replace(/-/g, "")
-      .replace(/ي/g, "ی")
-      .replace(/ك/g, "ک")
-      .toUpperCase();
-  };
-
   const filterPlaques = (searchTerm: string) => {
-    if (!searchTerm) {
-      setFilteredData(cars);
-      return;
-    }
-
-    const normalizedSearch = normalizePlate(searchTerm);
-
-    const filteredCars = cars.filter((car) => {
-      const normalizedPlate = normalizePlate(car.license_plate);
-
-      if (normalizedSearch.length > normalizedPlate.length) return false;
-
-      for (let i = 0; i < normalizedSearch.length; i++) {
-        if (normalizedPlate[i] !== normalizedSearch[i]) return false;
-      }
-
-      return true;
-    });
-
-    setFilteredData(filteredCars);
+    if (!searchTerm) return;
+    const filterCars = cars.filter((car) =>
+      car.license_plate.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredData(filterCars);
   };
+
+  useEffect(() => {
+    if (baskolData) handlePlaqueChange(baskolData.plaque_number);
+  }, [baskolData]);
 
   useEffect(() => {
     selectedCarHandler(selectedActivity?.Car);
