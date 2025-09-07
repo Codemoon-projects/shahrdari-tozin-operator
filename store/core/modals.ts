@@ -17,6 +17,7 @@ export enum ModalStep {
 }
 
 export interface ModalDataProps {
+  id: number;
   step: ModalStep;
   actionType: ActionType;
   activity?: ActivityType;
@@ -56,9 +57,8 @@ const coreSlice = createSlice({
       };
     },
     openModal: (state, action: PayloadAction<ModalDataProps>) => {
-      console.log("payload", action.payload);
-
       state.modals = { ...state.modals, ...action.payload };
+      console.log(state.modals);
     },
     closeModal: (state) => {
       state.modals = undefined;

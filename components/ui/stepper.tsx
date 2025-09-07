@@ -68,8 +68,6 @@ export function Stepper() {
     actionType,
   } = useModals();
 
-  console.log("current in if", currentStep);
-
   const steps = [
     {
       title: "پلاک",

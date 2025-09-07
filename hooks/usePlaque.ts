@@ -15,8 +15,6 @@ export default function usePlaque() {
 
   const fetchCarData = async () => {
     const response = await fetcher.get("cars/");
-    console.log(response.data);
-
     dispatch(Car_set(response.data));
   };
 

@@ -16,13 +16,14 @@ import usePlaque from "@/hooks/usePlaque";
 import { ModalStep } from "@/store/core/modals";
 
 export default function () {
+  const [online, setOnline] = useState(true);
   const { Action_list, get_Action_list_list_712daa } = useAction();
   const _ = usePlaque();
   const {
     Activity_data,
     get_Activity_list_list_d2bfc9,
     sendDataServer: sendActivityData,
-  } = useActivity();
+  } = useActivity(online ? "normal" : "silent");
   const { sendReport } = useCar("silent");
   const { openModal, isOpen } = useModals();
   const [messageModalOpen, setMessageModalOpen] = useState<
@@ -37,7 +38,6 @@ export default function () {
   const [companyName, setCompanyName] = useState("");
   const [desc, setDesc] = useState("");
   const [loading, setLoading] = useState(false);
-  const [online, setOnline] = useState(true);
   const [success, setSuccess] = useState(false);
 
   const openPlaqueFromButton = (actionType: ActionType) => {

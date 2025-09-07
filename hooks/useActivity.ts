@@ -50,28 +50,6 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
     }
   };
 
-  const createWithPlaque = async (data: {
-    Car: CarType;
-    Action: ActionType;
-    work: ActionWorkType;
-    baskol_number_empty?: number;
-    baskol_number_full?: number;
-  }) => {
-    const d: ActivityType = {
-      ...data,
-      pk: (Activity_data.length + 1) * -1,
-      Empty: null,
-      Full: null,
-      baskol_number_empty: data.baskol_number_empty,
-      baskol_number_full: data.baskol_number_full,
-      server_accepted: false,
-      work_type: data.work,
-      work_type_id: data.work.id,
-    };
-
-    dispatch(Activity_add(d));
-  };
-
   const setActivity = async (data: ActivityType) => {
     dispatch(Activity_update({ data, pk: data.pk }));
   };
@@ -84,10 +62,8 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
       weighing_type_id: a.Action.pk,
       Full: a.Full,
       Empty: a.Empty,
-      work_type_id: a.work_type.id,
+      work_type_id: a.work_type_id,
     }));
-
-    console.log("data", data);
 
     if (!data) return;
 
@@ -114,7 +90,6 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
     Activity_data,
     get_activity_list,
     get_Activity_list_list_d2bfc9: get_activity_list,
-    createWithPlaque,
     setActivity,
     sendDataServer,
   };

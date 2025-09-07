@@ -16,6 +16,7 @@ export default function Confirm() {
     empltyWeghting,
     fullWeghting,
     selectedWork,
+    modalData,
   } = useModals();
   const exports = actionType?.exports || [];
   const uploads: UploadTypes[] = actionType?.uploads || []; // اضافه کردن آپلودها
@@ -50,7 +51,7 @@ export default function Confirm() {
     fullWeghting && empltyWeghting ? fullWeghting - empltyWeghting : -1;
 
   const printReplaces = {
-    id: 0,
+    id: modalData.id,
     full: fullWeghting || "وزن نشده",
     empty: empltyWeghting || "وزن نشده",
     car_plaque: selectedCar?.license_plate,

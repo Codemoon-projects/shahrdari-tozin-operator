@@ -1,14 +1,11 @@
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import usePlaque from "./usePlaque";
 import {
   ModalStep,
   openModal as openModalDispatch,
   closeModal as closeModalRedux,
   ModalDataProps,
 } from "@/store/core/modals";
-import { ActionType, ActionWorkType } from "@/store/slices/Action";
 import { ActivityType } from "@/store/slices/Activity";
-import { CarType } from "@/store/slices/Car";
 import { useActivity } from "./useActivity";
 
 export const useModals = () => {
@@ -29,13 +26,15 @@ export const useModals = () => {
     (store) => store.modals.modals
   )?.activity;
   const dispatch = useAppDispatch();
-  const { setActivity } = useActivity();
+  const { setActivity, Activity_data } = useActivity();
 
   const closeModal = () => {
     if (!selectedCar) return;
 
+    console.log(Activity_data.length + 1);
+
     setActivity({
-      pk: -1,
+      pk: Activity_data.length + 1,
       ...selectedActivity,
       address: modalData?.address,
       baskol_number_empty: -1,
@@ -57,15 +56,20 @@ export const useModals = () => {
   };
 
   const updateCurrentData = (props: Partial<ModalDataProps>) => {
-    if (step === undefined || !actionType) return;
+    const id = modalData?.id || Activity_data.length + 1;
 
-    openModal({ ...modalData, step, actionType, ...props });
+    if (step === undefined || !actionType) return;
+    console.log("update new props -> ", props);
+    const newData = { ...modalData, id, step, actionType, ...props };
+
+    openModal(newData);
   };
 
   const openFromActivity = (activity: ActivityType) => {
     const act_action = activity.Action;
 
     let perviousData: ModalDataProps = {
+      id: activity.pk,
       step: ModalStep.PLAQUE,
       actionType: act_action,
       activity,
@@ -176,5 +180,6 @@ export const useModals = () => {
     selectedWork,
     openFromActivity,
     openModal,
+    modalData,
   };
 };
