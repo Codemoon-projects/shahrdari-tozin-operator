@@ -66,7 +66,7 @@ export default function Confirm() {
       const idx = updated.findIndex((f) => f.Field.id === field.id);
       if (idx !== -1) {
         updated[idx] = { ...updated[idx], value: newValue };
-      }.
+      }
       return updated;
     });
   };
