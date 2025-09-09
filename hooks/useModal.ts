@@ -27,11 +27,13 @@ export const useModals = () => {
 
   const closeModal = () => {
     if (!selectedCar) return;
+    console.log(modalData);
 
     const activityData = {
       ...selectedActivity,
       pk: modalData?.id || Activity_data.length + 1,
-      address: modalData?.address,
+      address: modalData?.address || "ثبت نشده",
+      Field_Data: modalData.Field_Data,
       baskol_number_empty: -1,
       baskol_number_full: -1,
       Car: selectedCar,

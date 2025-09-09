@@ -1,5 +1,5 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { ActionType, ActionWorkType } from "../slices/Action";
+import { ActionType, ActionWorkType, FieldType } from "../slices/Action";
 import { ActivityType } from "../slices/Activity";
 import { CarType } from "../slices/Car";
 
@@ -16,8 +16,13 @@ export enum ModalStep {
   CONFIRM,
 }
 
+export interface FieldDataWighing {
+  Field: FieldType;
+  value: string;
+}
 export interface ModalDataProps {
   id: number;
+  address?: string;
   step: ModalStep;
   actionType: ActionType;
   activity?: ActivityType;
@@ -25,7 +30,7 @@ export interface ModalDataProps {
   selectedWork?: ActionWorkType;
   fullWeghting?: number;
   empltyWeghting?: number;
-  address?: string;
+  Field_Data?: FieldDataWighing[] | [];
 }
 
 export type coreType = {
@@ -64,6 +69,7 @@ const coreSlice = createSlice({
       if (!state.modals) return;
       state.modals = { ...state.modals, ...action.payload };
     },
+
     closeModal: (state) => {
       state.modals = undefined;
     },

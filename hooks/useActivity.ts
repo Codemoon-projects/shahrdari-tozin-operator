@@ -56,6 +56,7 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
     const data = Activity_data.filter((a) => !a.server_accepted).map((a) => ({
       ...a,
       id: a.pk,
+      address: a.address,
       vehicle_id: a.Car.pk,
       weighing_type_id: a.Action.pk,
       Full: a.Full,

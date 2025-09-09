@@ -17,6 +17,13 @@ export interface ActionWorkType {
   name: string;
 }
 
+export interface FieldType {
+  id: number;
+  name: string;
+  key: string;
+  required: boolean;
+}
+
 export interface ActionType {
   pk: number;
   name: string;
@@ -24,6 +31,7 @@ export interface ActionType {
   exports: ExprotTypes[];
   uploads: UploadTypes[];
   works: ActionWorkType[];
+  Field: FieldType[];
 }
 
 interface SliceType {

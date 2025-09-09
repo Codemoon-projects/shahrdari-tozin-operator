@@ -1,6 +1,7 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 import { CarType } from "./Car";
 import { ActionType, ActionWorkType } from "./Action";
+import { FieldDataWighing } from "../core/modals";
 
 export interface ActivityType {
   pk: number;
@@ -14,6 +15,7 @@ export interface ActivityType {
   work_type: ActionWorkType;
   work_type_id: number;
   address?: string;
+  Field_Data?: FieldDataWighing[];
 }
 
 interface SliceType {

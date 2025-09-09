@@ -1,11 +1,25 @@
 "use client";
 
 import { Button } from "@/components/ui/button"; // فرض بر اینکه Input از ui دارید، اگر نه باید از shadcn/ui یا هر کتابخانه‌ای بگیرید
-import { Printer, Car, User, Scale, ChevronLeft, Upload } from "lucide-react";
-import { ModalStep } from "@/store/core/modals";
-import type { ExprotTypes, UploadTypes } from "@/store/slices/Action";
-import { useState } from "react";
+import {
+  Printer,
+  Car,
+  User,
+  Scale,
+  ChevronLeft,
+  Upload,
+  Divide,
+} from "lucide-react";
+import { FieldDataWighing, ModalStep, updateModal } from "@/store/core/modals";
+import type {
+  ExprotTypes,
+  FieldType,
+  UploadTypes,
+} from "@/store/slices/Action";
+import { useEffect, useState } from "react";
 import { useModals } from "@/hooks/useModal";
+import { useDispatch } from "react-redux";
+import { Activity_update } from "@/store/slices/Activity";
 
 export default function Confirm() {
   const {
@@ -20,20 +34,54 @@ export default function Confirm() {
   } = useModals();
   const exports = actionType?.exports || [];
   const uploads: UploadTypes[] = actionType?.uploads || []; // اضافه کردن آپلودها
+  const field: FieldType[] = actionType?.Field || [];
 
-  const [address, setAddress] = useState("");
+  console.log(actionType);
+
+  const [address, setaddress] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<
     Record<number, File | null>
   >({});
   const [error, setError] = useState("");
+  const dispatch = useDispatch();
+  const { updateCurrentData } = useModals();
+  const [Field_Data, setField_Data] = useState<FieldDataWighing[]>([]);
+
+  useEffect(() => {
+    setField_Data(
+      field.map((f: FieldType) => ({
+        Field: f,
+        value: "",
+      }))
+    );
+  }, [field]);
+
+  useEffect(() => {
+    updateCurrentData({ address, Field_Data });
+  }, [address, Field_Data]);
+
+  const handleFieldChange = (field: FieldType, newValue: string) => {
+    setField_Data((prev) => {
+      const updated = [...prev];
+      const idx = updated.findIndex((f) => f.Field.id === field.id);
+      if (idx !== -1) {
+        updated[idx] = { ...updated[idx], value: newValue };
+      }.
+      return updated;
+    });
+  };
 
   const closeModal = () => {
-    // const data = { ...modal?.activity, address } as unknown as ActivityType;
-    // dispatch(Activity_add(data));
-
     const missingRequired = uploads.filter(
       (u) => u.required && !uploadedFiles[u.id]
     );
+    const missingFields = Field_Data.filter(
+      (f) => f.Field.required && !f.value.trim()
+    );
+    if (missingFields.length > 0) {
+      setError("لطفاً تمام فیلدهای اجباری را پر کنید.");
+      return;
+    }
 
     if (missingRequired.length > 0) {
       setError("لطفاً تمام مدارک اجباری را بارگذاری کنید.");
@@ -116,6 +164,7 @@ export default function Confirm() {
       </div>
     );
   }
+  console.log(field);
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -198,10 +247,43 @@ export default function Confirm() {
               type="text"
               required={true}
               value={address}
-              onChange={(e) => setAddress(e.target.value)}
+              onChange={(e) => setaddress(e.target.value)}
               placeholder="آدرس را وارد کنید"
               className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             />
+          </div>
+
+          <div>
+            {Field_Data.length > 0 && (
+              <>
+                <h3 className="font-medium text-gray-700 mb-4">
+                  {" "}
+                  اطلاعات درخواستی
+                </h3>
+                <div className="grid grid-cols-3 gap-4">
+                  {Field_Data.map((field) => (
+                    <div
+                      key={field.Field.id}
+                      className="flex flex-row space-x-2 items-center justify-between"
+                    >
+                      <p>{field.Field.key}:</p>
+                      {field.Field.required && (
+                        <p className="text-xs text-red-500">* اجباری</p>
+                      )}
+                      <input
+                        type="text"
+                        required={field.Field.required}
+                        value={field.value}
+                        onChange={(e) =>
+                          handleFieldChange(field.Field, e.target.value)
+                        }
+                        className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
           </div>
 
           {/* Upload Section */}
