@@ -388,7 +388,7 @@ export default function Plaque() {
         <DialogContent className="max-w-md bg-white rounded-2xl shadow-xl p-0">
           <DialogHeader className="border-b px-6 py-4">
             <DialogTitle className="text-right pr-4 text-lg font-bold text-gray-800">
-              انتخاب نوع کار
+              انتخاب نوع بار
             </DialogTitle>
           </DialogHeader>
 
@@ -422,7 +422,7 @@ export default function Plaque() {
                     d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <p>هیچ نوع کاری موجود نیست</p>
+                <p>هیچ نوع باری موجود نیست</p>
               </div>
             )}
           </div>

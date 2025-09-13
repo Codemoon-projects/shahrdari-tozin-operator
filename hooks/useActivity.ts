@@ -64,7 +64,7 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
       work_type_id: a.work_type_id,
     }));
 
-    if (!data) return;
+    if (!data || data.length === 0) return;
 
     const response = await fetcher.post("activity/", data);
 
