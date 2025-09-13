@@ -10,6 +10,7 @@ import { ActivityType } from "@/store/slices/Activity";
 import { useActivity } from "./useActivity";
 import { useEffect } from "react";
 import { useAction } from "./useAction";
+import { useMid } from "./useMid";
 
 export const useModals = () => {
   const modalData = useAppSelector((store) => store.modals.modals);
@@ -20,10 +21,21 @@ export const useModals = () => {
   const selectedWork = modalData?.selectedWork;
   const step = modalData?.step;
   const selectedActivity = modalData?.activity;
+  const { baskolData } = useMid();
 
   const dispatch = useAppDispatch();
   const { setActivity, Activity_data } = useActivity();
   const { Action_list } = useAction();
+
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  const hours = String(now.getHours()).padStart(2, "0");
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
+
+  const datetimeString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 
   const closeModal = () => {
     if (!selectedCar) return;
@@ -34,8 +46,10 @@ export const useModals = () => {
       pk: modalData?.id || Activity_data.length + 1,
       address: modalData?.address || "ثبت نشده",
       Field_Data: modalData.Field_Data,
-      baskol_number_empty: -1,
-      baskol_number_full: -1,
+      Empty_baskol_number: baskolData?.baskol_number,
+      Empty_baskol_date: datetimeString,
+      Full_baskol_number: baskolData?.baskol_number,
+      Full_baskol_date: datetimeString,
       Car: selectedCar,
       Empty: empltyWeghting || null,
       Full: fullWeghting || null,
