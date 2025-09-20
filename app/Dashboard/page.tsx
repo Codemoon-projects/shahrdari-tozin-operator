@@ -79,7 +79,7 @@ export default function () {
 
   const handleSendMessage = async () => {
     setLoading(true);
-    sendReport({
+    const resp = await sendReport({
       report_type: reportType,
       driver_name: driverName,
       driver_number: driverNumber,
@@ -88,7 +88,7 @@ export default function () {
       company_name: companyName,
       desc: desc,
     });
-    setSuccess(true);
+    setSuccess(resp?.status === 201);
     setDriverName("");
     setDriverNumber("");
     setCarPlaque("");
@@ -126,7 +126,9 @@ export default function () {
                 <img src="/logowhite.png" alt="Logo" className="w-20 h-20" />
               </div>
               <div>
-                <h1 className="text-2xl font-serif">سیستم مدیریت شهرداری</h1>
+                <h1 className="text-2xl font-serif">
+                  سیستم مدیریت باسکول شهرداری
+                </h1>
                 <p className="text-sm opacity-80">داشبورد اپراتور</p>
               </div>
             </div>
