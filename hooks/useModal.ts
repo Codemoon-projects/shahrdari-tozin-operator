@@ -24,7 +24,7 @@ export const useModals = () => {
   const { baskolData } = useMid();
 
   const dispatch = useAppDispatch();
-  const { setActivity, Activity_data } = useActivity();
+  const { setActivity, Activity_data } = useActivity("silent");
   const { Action_list } = useAction();
 
   const now = new Date();
