@@ -63,7 +63,7 @@ const coreSlice = createSlice({
     },
     openModal: (state, action: PayloadAction<ModalDataProps>) => {
       state.modals = { ...state.modals, ...action.payload };
-      console.log(state.modals);
+      //(state.modals);
     },
     updateModal: (state, action: PayloadAction<Partial<ModalDataProps>>) => {
       if (!state.modals) return;

@@ -36,7 +36,7 @@ export default function Confirm() {
   const uploads: UploadTypes[] = actionType?.uploads || []; // اضافه کردن آپلودها
   const field: FieldType[] = actionType?.Field || [];
 
-  console.log(actionType);
+  //(actionType);
 
   const [address, setaddress] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<
@@ -55,10 +55,6 @@ export default function Confirm() {
       }))
     );
   }, [field]);
-
-  useEffect(() => {
-    updateCurrentData({ address, Field_Data });
-  }, [address, Field_Data]);
 
   const handleFieldChange = (field: FieldType, newValue: string) => {
     setField_Data((prev) => {
@@ -87,6 +83,7 @@ export default function Confirm() {
       setError("لطفاً تمام مدارک اجباری را بارگذاری کنید.");
       return;
     }
+    updateCurrentData({ Field_Data });
 
     goNext(ModalStep.CONFIRM);
   };
@@ -164,7 +161,7 @@ export default function Confirm() {
       </div>
     );
   }
-  console.log(field);
+  //(field);
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -239,20 +236,6 @@ export default function Confirm() {
           </div>
 
           {/* Address Input */}
-          <div>
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              آدرس
-            </label>
-            <input
-              type="text"
-              required={true}
-              value={address}
-              onChange={(e) => setaddress(e.target.value)}
-              placeholder="آدرس را وارد کنید"
-              className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
           <div>
             {Field_Data.length > 0 && (
               <>
