@@ -38,9 +38,12 @@ export const useModals = () => {
   const datetimeString = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
 
   const closeModal = () => {
-    if (!selectedCar) return;
-    console.log(modalData);
+    if (!selectedCar) {
+      dispatch(closeModalRedux());
+      return;
+    }
 
+    console.log(modalData);
     const activityData = {
       ...selectedActivity,
       pk: modalData?.id || Activity_data.length + 1,

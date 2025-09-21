@@ -10,7 +10,7 @@ export default function WeightSection() {
   const [isCalculating, setIsCalculating] = useState(true);
   const { goNext, goPervious, selectedCar, step } = useModals();
   const [calculatedWeight, setCalculatedWeight] = useState<number | null>(null);
-  const { baskolData } = useMid();
+  const { baskolData, fetchMidData } = useMid();
 
   const isEmptyWeightCalc = step === ModalStep.WEIGHTING_EMPTY;
 
@@ -18,6 +18,10 @@ export default function WeightSection() {
     ? ModalStep.WEIGHTING_EMPTY
     : ModalStep.WEIGHTING_FULL;
 
+  console.log("#######################################");
+  useEffect(() => {
+    fetchMidData();
+  }, [step]);
   useEffect(() => {
     if (baskolData) {
       setCalculatedWeight(baskolData?.baskol_value);
