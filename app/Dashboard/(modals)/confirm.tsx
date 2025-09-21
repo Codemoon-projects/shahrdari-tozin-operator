@@ -36,7 +36,7 @@ export default function Confirm() {
   const uploads: UploadTypes[] = actionType?.uploads || []; // اضافه کردن آپلودها
   const field: FieldType[] = actionType?.Field || [];
 
-  //(actionType);
+  console.log(actionType);
 
   const [address, setaddress] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<
@@ -46,6 +46,7 @@ export default function Confirm() {
   const dispatch = useDispatch();
   const { updateCurrentData } = useModals();
   const [Field_Data, setField_Data] = useState<FieldDataWighing[]>([]);
+  const [done, isdone] = useState(false);
 
   useEffect(() => {
     setField_Data(
@@ -55,6 +56,8 @@ export default function Confirm() {
       }))
     );
   }, [field]);
+
+  console.log("$$$$$$$$$$$$$$$$$$$$$$", modalData);
 
   const handleFieldChange = (field: FieldType, newValue: string) => {
     setField_Data((prev) => {
@@ -66,6 +69,15 @@ export default function Confirm() {
       return updated;
     });
   };
+
+  const handelSetFieldToSlice = () => {
+    updateCurrentData({ Field_Data });
+  };
+  // useEffect(() => {
+  //   console.log("sajhgjahfgjksajglka;jgiujhankgansgjkl");
+
+  //   updateCurrentData({ Field_Data });
+  // }, [done]);
 
   const closeModal = () => {
     const missingRequired = uploads.filter(
@@ -83,7 +95,6 @@ export default function Confirm() {
       setError("لطفاً تمام مدارک اجباری را بارگذاری کنید.");
       return;
     }
-    updateCurrentData({ Field_Data });
 
     goNext(ModalStep.CONFIRM);
   };
@@ -161,7 +172,7 @@ export default function Confirm() {
       </div>
     );
   }
-  //(field);
+  console.log(field);
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -257,6 +268,7 @@ export default function Confirm() {
                         type="text"
                         required={field.Field.required}
                         value={field.value}
+                        onBlur={handelSetFieldToSlice}
                         onChange={(e) =>
                           handleFieldChange(field.Field, e.target.value)
                         }

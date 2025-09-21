@@ -46,7 +46,7 @@ export const useModals = () => {
     console.log(modalData);
     const activityData = {
       ...selectedActivity,
-      pk: modalData?.id || Activity_data.length + 1,
+      tozin_id: Date.now(),
       address: modalData?.address || "ثبت نشده",
       Field_Data: modalData.Field_Data,
       Empty_baskol_number: baskolData?.baskol_number,
@@ -93,7 +93,7 @@ export const useModals = () => {
     if (!act_action) return;
 
     let perviousData: ModalDataProps = {
-      id: activity.pk,
+      id: activity.tozin_id,
       step: ModalStep.PLAQUE,
       actionType: act_action,
       activity,
@@ -113,7 +113,6 @@ export const useModals = () => {
     switch ([!!activity.Full, !!activity.Empty, act_action.type].join("|")) {
       case "true|false|full":
       case "false|false|empty":
-      case "false|true|empty":
         perviousData.step = ModalStep.WEIGHTING_EMPTY;
         openModal(perviousData);
         return;

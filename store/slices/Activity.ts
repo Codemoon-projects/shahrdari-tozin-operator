@@ -4,7 +4,7 @@ import { ActionType, ActionWorkType } from "./Action";
 import { FieldDataWighing } from "../core/modals";
 
 export interface ActivityType {
-  pk: number;
+  tozin_id?: number;
   Empty: number | null;
   Full: number | null;
   Car: CarType;
@@ -39,35 +39,45 @@ const Activity = createSlice({
     }),
     update: (
       state,
-      action: PayloadAction<{ data: ActivityType; pk: ActivityType["pk"] }>
+      action: PayloadAction<{
+        data: ActivityType;
+        pk: ActivityType["tozin_id"];
+      }>
     ) => ({
       ...state,
       data: [
         action.payload.data,
-        ...state.data.filter((d) => d.pk !== action.payload.pk),
+        ...state.data.filter((d) => d.tozin_id !== action.payload.pk),
       ],
     }),
-    remove: (state, action: PayloadAction<{ pk: ActivityType["pk"] }>) => ({
+    remove: (
+      state,
+      action: PayloadAction<{ pk: ActivityType["tozin_id"] }>
+    ) => ({
       ...state,
-      data: state.data.filter((d) => d.pk !== action.payload.pk),
+      data: state.data.filter((d) => d.tozin_id !== action.payload.pk),
     }),
 
     update_empty: (
       state,
-      action: PayloadAction<{ pk: ActivityType["pk"]; empty: number }>
+      action: PayloadAction<{ pk: ActivityType["tozin_id"]; empty: number }>
     ) => ({
       ...state,
       data: state.data.map((d) =>
-        d.pk === action.payload.pk ? { ...d, Empty: action.payload.empty } : d
+        d.tozin_id === action.payload.pk
+          ? { ...d, Empty: action.payload.empty }
+          : d
       ),
     }),
     update_full: (
       state,
-      action: PayloadAction<{ pk: ActivityType["pk"]; full: number }>
+      action: PayloadAction<{ pk: ActivityType["tozin_id"]; full: number }>
     ) => ({
       ...state,
       data: state.data.map((d) =>
-        d.pk === action.payload.pk ? { ...d, Full: action.payload.full } : d
+        d.tozin_id === action.payload.pk
+          ? { ...d, Full: action.payload.full }
+          : d
       ),
     }),
   },
