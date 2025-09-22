@@ -49,13 +49,13 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
   };
 
   const setActivity = async (data: ActivityType) => {
-    dispatch(Activity_update({ data, pk: data.pk }));
+    dispatch(Activity_update({ data, pk: data.tozin_id }));
   };
 
   const sendDataServer = async () => {
     const data = Activity_data.filter((a) => !a.server_accepted).map((a) => ({
       ...a,
-      id: a.pk,
+      id: a.tozin_id,
       address: a.address,
       vehicle_id: a.Car.pk,
       weighing_type_id: a.Action.pk,

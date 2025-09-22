@@ -10,7 +10,8 @@ export default function WeightSection() {
   const [isCalculating, setIsCalculating] = useState(true);
   const { goNext, goPervious, selectedCar, step } = useModals();
   const [calculatedWeight, setCalculatedWeight] = useState<number | null>(null);
-  const { baskolData } = useMid();
+  const { baskolData, fetchMidData } = useMid();
+  //(step === ModalStep.WEIGHTING_EMPTY);
 
   const isEmptyWeightCalc = step === ModalStep.WEIGHTING_EMPTY;
 
@@ -18,6 +19,10 @@ export default function WeightSection() {
     ? ModalStep.WEIGHTING_EMPTY
     : ModalStep.WEIGHTING_FULL;
 
+  //("#######################################", step);
+  useEffect(() => {
+    fetchMidData();
+  }, [step]);
   useEffect(() => {
     if (baskolData) {
       setCalculatedWeight(baskolData?.baskol_value);
@@ -31,17 +36,6 @@ export default function WeightSection() {
 
   const handleSubmit = (value: number) => {
     if (value) {
-      // if (!modal?.activity || !modal.actionType) {
-      //   return;
-      // }
-
-      // const valueChecked = {
-      //   ...modal.activity,
-      //   Empty: isEmptyWeightCalc ? value : modal.activity.Empty,
-      //   Full: isEmptyWeightCalc ? modal.activity.Full : modal.activity.Full,
-      //   server_accepted: false,
-      // };
-
       const currentKey = isEmptyWeightCalc ? "empltyWeghting" : "fullWeghting";
 
       goNext(currentStep, {

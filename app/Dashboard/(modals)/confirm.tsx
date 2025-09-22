@@ -46,6 +46,7 @@ export default function Confirm() {
   const dispatch = useDispatch();
   const { updateCurrentData } = useModals();
   const [Field_Data, setField_Data] = useState<FieldDataWighing[]>([]);
+  const [done, isdone] = useState(false);
 
   useEffect(() => {
     setField_Data(
@@ -56,9 +57,7 @@ export default function Confirm() {
     );
   }, [field]);
 
-  useEffect(() => {
-    updateCurrentData({ address, Field_Data });
-  }, [address, Field_Data]);
+  console.log("$$$$$$$$$$$$$$$$$$$$$$", modalData);
 
   const handleFieldChange = (field: FieldType, newValue: string) => {
     setField_Data((prev) => {
@@ -70,6 +69,15 @@ export default function Confirm() {
       return updated;
     });
   };
+
+  const handelSetFieldToSlice = () => {
+    updateCurrentData({ Field_Data });
+  };
+  // useEffect(() => {
+  //   console.log("sajhgjahfgjksajglka;jgiujhankgansgjkl");
+
+  //   updateCurrentData({ Field_Data });
+  // }, [done]);
 
   const closeModal = () => {
     const missingRequired = uploads.filter(
@@ -240,20 +248,6 @@ export default function Confirm() {
 
           {/* Address Input */}
           <div>
-            <label className="block mb-2 text-sm font-medium text-gray-700">
-              آدرس
-            </label>
-            <input
-              type="text"
-              required={true}
-              value={address}
-              onChange={(e) => setaddress(e.target.value)}
-              placeholder="آدرس را وارد کنید"
-              className="w-full border border-gray-300 rounded-lg p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-          </div>
-
-          <div>
             {Field_Data.length > 0 && (
               <>
                 <h3 className="font-medium text-gray-700 mb-4">
@@ -274,6 +268,7 @@ export default function Confirm() {
                         type="text"
                         required={field.Field.required}
                         value={field.value}
+                        onBlur={handelSetFieldToSlice}
                         onChange={(e) =>
                           handleFieldChange(field.Field, e.target.value)
                         }

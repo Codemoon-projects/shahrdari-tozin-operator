@@ -25,10 +25,10 @@ export function useAuth() {
     try {
       const response = await axiosNoUser.post("login/", params);
 
-      console.log("status", response.status);
-      console.log("OKOKOOKOKOKOKO");
+      //("status", response.status);
+      //("OKOKOOKOKOKOKO");
 
-      console.log("-->>", response.data);
+      //("-->>", response.data);
       if (response.status !== 200) {
         throw new Error(response.data.error || "Login failed");
       }
@@ -44,7 +44,7 @@ export function useAuth() {
       localStorage.setItem("refreshToken", refresh);
       localStorage.setItem("user", JSON.stringify(user));
 
-      console.log("Login successful, redirecting to Dashboard...");
+      //("Login successful, redirecting to Dashboard...");
 
       // // Force page reload to trigger middleware for redirection
       window.location.href = "/Dashboard";

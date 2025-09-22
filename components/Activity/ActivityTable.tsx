@@ -47,7 +47,7 @@ export default function ActivityTable({ data }: ActivityTableProps) {
         </TableHeader>
         <TableBody className="bg-white divide-y divide-gray-200">
           {data.map((item) => (
-            <Activity_d2bfc9_list_item key={item.pk} data={item} />
+            <Activity_d2bfc9_list_item key={item.tozin_id} data={item} />
           ))}
         </TableBody>
       </Table>
