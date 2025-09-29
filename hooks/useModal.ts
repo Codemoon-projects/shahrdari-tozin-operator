@@ -46,7 +46,7 @@ export const useModals = () => {
     console.log(modalData);
     const activityData = {
       ...selectedActivity,
-      tozin_id: Date.now(),
+      tozin_id: selectedActivity?.tozin_id || Date.now(),
       address: modalData?.address || "ثبت نشده",
       Field_Data: modalData.Field_Data,
       Empty_baskol_number: baskolData?.baskol_number,
@@ -91,6 +91,8 @@ export const useModals = () => {
   const openFromActivity = (activity: ActivityType) => {
     const act_action = Action_list.find((a) => a.pk === activity.Action.pk);
     if (!act_action) return;
+
+    console.log("------------", activity);
 
     let perviousData: ModalDataProps = {
       id: activity.tozin_id,
