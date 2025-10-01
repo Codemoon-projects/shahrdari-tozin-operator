@@ -38,6 +38,9 @@ export default function ActivityTable({ data }: ActivityTableProps) {
               وزن پر
             </TableHead>
             <TableHead className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">
+              وزن خالص
+            </TableHead>
+            <TableHead className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">
               زمان
             </TableHead>
             <TableHead className="px-4 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider text-right">

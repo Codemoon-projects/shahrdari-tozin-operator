@@ -3,20 +3,20 @@ import toast from "react-hot-toast";
 import Cookies from "js-cookie";
 
 export const fetcher = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:8000/",
+  baseURL: "http://tozin.ardabilcity.ir/api/",
   validateStatus(status) {
     return status < 500;
   },
 });
 
 export const axiosNoUser = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_SERVER_URL || "http://localhost:8000/",
+  baseURL: "http://tozin.ardabilcity.ir/api/",
   validateStatus(status) {
     return status < 500;
   },
 });
 export const midFetcher = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_MID_URL,
+  baseURL: "http://tozin.ardabilcity.ir/status/",
   validateStatus(status) {
     return status < 500;
   },

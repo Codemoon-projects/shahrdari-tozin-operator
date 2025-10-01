@@ -54,6 +54,7 @@ export default function Activity_d2bfc9_list_item({ data }: ActivityProps) {
   return (
     <TableRow className="hover:bg-gray-50 transition-colors">
       {/* ID Column */}
+
       <TableCell className="px-4 py-3 text-sm font-mono text-gray-500">
         {id}
       </TableCell>
@@ -93,6 +94,9 @@ export default function Activity_d2bfc9_list_item({ data }: ActivityProps) {
       {/* Full Weight Column */}
       <TableCell className="px-4 py-3 text-sm text-right text-gray-700">
         {Full ? Full : "-"}
+      </TableCell>
+      <TableCell className="px-4 py-3 text-sm text-right text-gray-700">
+        {Full && Empty ? Full - Empty : "-"}
       </TableCell>
 
       {/* Time Column */}
