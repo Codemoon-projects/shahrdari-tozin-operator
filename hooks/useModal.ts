@@ -14,6 +14,7 @@ import { useMid } from "./useMid";
 
 export const useModals = () => {
   const modalData = useAppSelector((store) => store.modals.modals);
+  const activityState = useAppSelector((store) => store.Activity);
   const selectedCar = modalData?.car;
   const actionType = modalData?.actionType;
   const fullWeghting = modalData?.fullWeghting;
@@ -44,9 +45,22 @@ export const useModals = () => {
     }
 
     console.log(modalData);
+    // Generate a small integer tozin_id based on existing activity count
+    const existingIds = new Set(
+      (Activity_data || [])
+        .map((a) => a.tozin_id)
+        .filter((n): n is number => typeof n === "number")
+    );
+    let nextTozinId: number =
+      (activityState && typeof activityState.last_tozin_id === "number"
+        ? activityState.last_tozin_id
+        : 0) + 1;
+    while (existingIds.has(nextTozinId)) {
+      nextTozinId++;
+    }
     const activityData = {
       ...selectedActivity,
-      tozin_id: selectedActivity?.tozin_id || Date.now(),
+      tozin_id: selectedActivity?.tozin_id ?? nextTozinId,
       address: modalData?.address || "ثبت نشده",
       Field_Data: modalData.Field_Data,
       Empty_baskol_number: baskolData?.baskol_number,
@@ -95,7 +109,7 @@ export const useModals = () => {
     console.log("------------", activity);
 
     let perviousData: ModalDataProps = {
-      id: activity.tozin_id,
+      id: activity.tozin_id ?? 0,
       step: ModalStep.PLAQUE,
       actionType: act_action,
       activity,

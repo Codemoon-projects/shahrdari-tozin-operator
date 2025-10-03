@@ -3,6 +3,7 @@ import {
   Activity_add,
   Activity_set,
   Activity_update,
+  Activity_set_base,
   type ActivityType,
 } from "@/store/slices/Activity";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
@@ -29,6 +30,7 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
 
       if (response.status >= 200 && response.status < 300) {
         const serverData = response.data.Weighing;
+        const lastBase: number = response.data.last_tozin_id ?? 0;
 
         // set response of server on state
         dispatch(
@@ -36,6 +38,7 @@ export function useActivity(mode: undefined | "silent" | "normal" = "normal") {
             serverData.map((a: any) => ({ ...a, server_accepted: true }))
           )
         );
+        dispatch(Activity_set_base(lastBase));
         return true;
       }
 

@@ -20,9 +20,10 @@ export interface ActivityType {
 
 interface SliceType {
   data: ActivityType[];
+  last_tozin_id: number;
 }
 
-const initialState: SliceType = { data: [] };
+const initialState: SliceType = { data: [], last_tozin_id: 0 };
 
 const Activity = createSlice({
   name: "Activity",
@@ -31,6 +32,10 @@ const Activity = createSlice({
     set: (state, action: PayloadAction<ActivityType[]>) => ({
       ...state,
       data: action.payload,
+    }),
+    set_base: (state, action: PayloadAction<number>) => ({
+      ...state,
+      last_tozin_id: action.payload ?? 0,
     }),
     clear: (state) => ({ ...state, data: [] }),
     add: (state, action: PayloadAction<ActivityType>) => ({
@@ -86,6 +91,7 @@ export default Activity.reducer;
 export const {
   clear: Activity_clear,
   set: Activity_set,
+  set_base: Activity_set_base,
   add: Activity_add,
   update: Activity_update,
   remove: Activity_remove,
