@@ -242,6 +242,12 @@ export default function Confirm() {
                   <p className="text-sm text-gray-500">وزن پر</p>
                   <p className="font-medium text-lg">{fullWeghting} کیلوگرم</p>
                 </div>
+                <div className="bg-white p-3 rounded-md">
+                  <p className="text-sm text-gray-500">وزن خالص</p>
+                  <p className="font-medium text-lg">
+                    {(fullWeghting || 0) - (empltyWeghting || 0)} کیلوگرم
+                  </p>
+                </div>
               </div>
             </div>
           </div>
