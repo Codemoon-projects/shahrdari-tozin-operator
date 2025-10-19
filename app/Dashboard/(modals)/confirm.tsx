@@ -1,16 +1,8 @@
 "use client";
 
 import { Button } from "@/components/ui/button"; // فرض بر اینکه Input از ui دارید، اگر نه باید از shadcn/ui یا هر کتابخانه‌ای بگیرید
-import {
-  Printer,
-  Car,
-  User,
-  Scale,
-  ChevronLeft,
-  Upload,
-  Divide,
-} from "lucide-react";
-import { FieldDataWighing, ModalStep, updateModal } from "@/store/core/modals";
+import { Printer, Car, User, Scale, ChevronLeft, Upload } from "lucide-react";
+import { FieldDataWighing, ModalStep } from "@/store/core/modals";
 import type {
   ExprotTypes,
   FieldType,
@@ -18,8 +10,6 @@ import type {
 } from "@/store/slices/Action";
 import { useEffect, useState } from "react";
 import { useModals } from "@/hooks/useModal";
-import { useDispatch } from "react-redux";
-import { Activity_update } from "@/store/slices/Activity";
 
 export default function Confirm() {
   const {
@@ -36,17 +26,12 @@ export default function Confirm() {
   const uploads: UploadTypes[] = actionType?.uploads || []; // اضافه کردن آپلودها
   const field: FieldType[] = actionType?.Field || [];
 
-  console.log(actionType);
-
-  const [address, setaddress] = useState("");
   const [uploadedFiles, setUploadedFiles] = useState<
     Record<number, File | null>
   >({});
   const [error, setError] = useState("");
-  const dispatch = useDispatch();
   const { updateCurrentData } = useModals();
   const [Field_Data, setField_Data] = useState<FieldDataWighing[]>([]);
-  const [done, isdone] = useState(false);
 
   useEffect(() => {
     setField_Data(
@@ -56,8 +41,6 @@ export default function Confirm() {
       }))
     );
   }, [field]);
-
-  console.log("$$$$$$$$$$$$$$$$$$$$$$", modalData);
 
   const handleFieldChange = (field: FieldType, newValue: string) => {
     setField_Data((prev) => {
@@ -73,12 +56,6 @@ export default function Confirm() {
   const handelSetFieldToSlice = () => {
     updateCurrentData({ Field_Data });
   };
-  // useEffect(() => {
-  //   console.log("sajhgjahfgjksajglka;jgiujhankgansgjkl");
-
-  //   updateCurrentData({ Field_Data });
-  // }, [done]);
-
   const closeModal = () => {
     const missingRequired = uploads.filter(
       (u) => u.required && !uploadedFiles[u.id]
@@ -118,10 +95,10 @@ export default function Confirm() {
     full_date: new Date().toLocaleString("fa"),
     net_weight: net_weight > 0 ? net_weight : "ناتمام",
     work_name: selectedWork?.name,
-    address: address || "ثبت نشده",
   };
 
   const handlePrint = async (exportType: ExprotTypes) => {
+    // eslint-disable
     const printWindow = window.open("", "_blank");
     if (!printWindow) return;
 
@@ -172,7 +149,6 @@ export default function Confirm() {
       </div>
     );
   }
-  console.log(field);
 
   return (
     <div className="max-w-4xl mx-auto p-6">
