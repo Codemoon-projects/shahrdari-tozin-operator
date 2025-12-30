@@ -120,6 +120,8 @@ export default function Plaque() {
     undefined
   );
 
+  console.log("filteredData", filteredData);
+
   const filterPlaques = (searchTerm: string) => {
     if (!searchTerm) return;
     const filterCars = cars.filter((car) =>
@@ -129,7 +131,8 @@ export default function Plaque() {
   };
 
   useEffect(() => {
-    if (baskolData) handlePlaqueChange(baskolData.plaque_number);
+    if (baskolData && baskolData.plaque_number)
+      handlePlaqueChange(baskolData.plaque_number);
   }, [baskolData]);
 
   useEffect(() => {
@@ -154,14 +157,9 @@ export default function Plaque() {
     setShowDropdown(false);
   };
 
-  const handleSubmit = () => {
-    const car = cars.find(
-      (c) => `${c.license_plate}${c.license_plate_code}` === selectedPlaque
-    );
-    if (car) {
-      selectedCarHandler(car);
-      updateCurrentData({ car });
-    }
+  const handleSubmit = (car: CarType) => {
+    selectedCarHandler(car);
+    updateCurrentData({ car });
   };
 
   const handleNextStep = () => {
@@ -204,7 +202,7 @@ export default function Plaque() {
                       </p>
                       {selectedCar.driver && selectedCar.driver.name && (
                         <p className="text-sm text-gray-600">
-                          مالک: {selectedCar.driver.name}
+                          راننده: {selectedCar.driver.name}
                         </p>
                       )}
                     </div>
@@ -223,6 +221,15 @@ export default function Plaque() {
                       <span className="text-gray-500">نوع خودرو:</span>
                       <p className="font-medium">
                         {selectedCar.type__name || "نامشخص"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-gray-200 pt-4">
+                    <div>
+                      <span className="text-gray-500">پیمانکار:</span>
+                      <p className="font-medium">
+                        {selectedCar.contractor__name || "نامشخص"}
                       </p>
                     </div>
                   </div>
@@ -339,12 +346,13 @@ export default function Plaque() {
                         {filteredData.map((item) => (
                           <button
                             key={item.pk}
-                            onClick={() =>
+                            onClick={() => {
                               handlePlaqueSelect(
                                 item.license_plate,
                                 String(item.license_plate_code)
-                              )
-                            }
+                              );
+                              handleSubmit(item);
+                            }}
                             className="w-full px-4 py-3 text-right hover:bg-gray-50 border-b border-gray-100 last:border-b-0 text-sm"
                           >
                             <div className="flex justify-between items-center">
@@ -363,6 +371,11 @@ export default function Plaque() {
                                   ? item.driver.name
                                   : "مالک نامشخص"}
                               </span>
+                              <span className="text-xs text-gray-500">
+                                {item.contractor__name
+                                  ? item.contractor__name
+                                  : "مالک نامشخص"}
+                              </span>
                             </div>
                           </button>
                         ))}
@@ -370,13 +383,6 @@ export default function Plaque() {
                     )}
                   </div>
                 </div>
-                <Button
-                  onClick={handleSubmit}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
-                  disabled={!selectedPlaque.trim()}
-                >
-                  جستجو
-                </Button>
               </div>
             </div>
           </div>

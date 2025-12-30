@@ -13,6 +13,7 @@ export interface CarType {
   license_plate_code:number
   type__name: string;
   last_empty_weight: number;
+  contractor__name:string
 }
 
 interface SliceType {
